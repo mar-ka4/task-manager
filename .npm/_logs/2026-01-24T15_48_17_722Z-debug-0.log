@@ -1,0 +1,121 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.0
+2 info using node@v22.11.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\RAZER\Desktop\task-manager\.npmrc
+5 silly config load:file:C:\Users\RAZER\.npmrc
+6 silly config load:file:C:\Users\RAZER\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" ".npm" "--prefer-offline" "false"
+9 verbose logfile logs-max:10 dir:C:\Users\RAZER\Desktop\task-manager\.npm\_logs\2026-01-24T15_48_17_722Z-
+10 verbose logfile C:\Users\RAZER\Desktop\task-manager\.npm\_logs\2026-01-24T15_48_17_722Z-debug-0.log
+11 silly logfile done cleaning log files
+12 http fetch GET https://registry.npmjs.org/npm attempt 1 failed with ECONNREFUSED
+13 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+14 silly idealTree buildDeps
+15 silly fetch manifest next@16.0.10
+16 silly packumentCache full:https://registry.npmjs.org/next cache-miss
+17 silly fetch manifest react@19.2.0
+18 silly packumentCache full:https://registry.npmjs.org/react cache-miss
+19 silly fetch manifest react-dom@19.2.0
+20 silly packumentCache full:https://registry.npmjs.org/react-dom cache-miss
+21 silly fetch manifest typescript@^5.0.0
+22 silly packumentCache full:https://registry.npmjs.org/typescript cache-miss
+23 silly fetch manifest @types/node@^20.0.0
+24 silly packumentCache full:https://registry.npmjs.org/@types%2fnode cache-miss
+25 silly fetch manifest @types/react@^18.0.0
+26 silly packumentCache full:https://registry.npmjs.org/@types%2freact cache-miss
+27 silly fetch manifest @types/react-dom@^18.0.0
+28 silly packumentCache full:https://registry.npmjs.org/@types%2freact-dom cache-miss
+29 silly fetch manifest tailwindcss@^4.1.9
+30 silly packumentCache full:https://registry.npmjs.org/tailwindcss cache-miss
+31 silly fetch manifest autoprefixer@^10.4.20
+32 silly packumentCache full:https://registry.npmjs.org/autoprefixer cache-miss
+33 silly fetch manifest postcss@^8.4.47
+34 silly packumentCache full:https://registry.npmjs.org/postcss cache-miss
+35 silly fetch manifest @radix-ui/react-dialog@^1.1.1
+36 silly packumentCache full:https://registry.npmjs.org/@radix-ui%2freact-dialog cache-miss
+37 silly fetch manifest @radix-ui/react-dropdown-menu@^2.1.1
+38 silly packumentCache full:https://registry.npmjs.org/@radix-ui%2freact-dropdown-menu cache-miss
+39 silly fetch manifest @radix-ui/react-select@^2.1.1
+40 silly packumentCache full:https://registry.npmjs.org/@radix-ui%2freact-select cache-miss
+41 silly fetch manifest @radix-ui/react-slot@^1.1.0
+42 silly packumentCache full:https://registry.npmjs.org/@radix-ui%2freact-slot cache-miss
+43 silly fetch manifest @radix-ui/react-switch@^1.1.0
+44 silly packumentCache full:https://registry.npmjs.org/@radix-ui%2freact-switch cache-miss
+45 silly fetch manifest lucide-react@^0.460.0
+46 silly packumentCache full:https://registry.npmjs.org/lucide-react cache-miss
+47 silly fetch manifest react-hook-form@^7.54.2
+48 silly packumentCache full:https://registry.npmjs.org/react-hook-form cache-miss
+49 silly fetch manifest zod@^3.24.1
+50 silly packumentCache full:https://registry.npmjs.org/zod cache-miss
+51 silly fetch manifest @hookform/resolvers@^3.9.1
+52 silly packumentCache full:https://registry.npmjs.org/@hookform%2fresolvers cache-miss
+53 silly fetch manifest date-fns@^4.1.0
+54 silly packumentCache full:https://registry.npmjs.org/date-fns cache-miss
+55 silly fetch manifest sonner@^1.7.1
+56 silly packumentCache full:https://registry.npmjs.org/sonner cache-miss
+57 silly fetch manifest socket.io-client@^4.8.1
+58 silly packumentCache full:https://registry.npmjs.org/socket.io-client cache-miss
+59 silly fetch manifest class-variance-authority@^0.7.1
+60 silly packumentCache full:https://registry.npmjs.org/class-variance-authority cache-miss
+61 silly fetch manifest clsx@^2.1.1
+62 silly packumentCache full:https://registry.npmjs.org/clsx cache-miss
+63 silly fetch manifest tailwind-merge@^2.5.4
+64 silly packumentCache full:https://registry.npmjs.org/tailwind-merge cache-miss
+65 silly fetch manifest eslint@^8.57.1
+66 silly packumentCache full:https://registry.npmjs.org/eslint cache-miss
+67 silly fetch manifest eslint-config-next@16.0.10
+68 silly packumentCache full:https://registry.npmjs.org/eslint-config-next cache-miss
+69 silly fetch manifest concurrently@^9.1.0
+70 silly packumentCache full:https://registry.npmjs.org/concurrently cache-miss
+71 silly placeDep ROOT @hookform/resolvers@ OK for: task-manager@1.0.0 want: ^3.9.1
+72 silly placeDep ROOT @radix-ui/react-dialog@ OK for: task-manager@1.0.0 want: ^1.1.1
+73 silly placeDep ROOT @radix-ui/react-dropdown-menu@ OK for: task-manager@1.0.0 want: ^2.1.1
+74 silly placeDep ROOT @radix-ui/react-select@ OK for: task-manager@1.0.0 want: ^2.1.1
+75 silly placeDep ROOT @radix-ui/react-slot@ OK for: task-manager@1.0.0 want: ^1.1.0
+76 silly placeDep ROOT @radix-ui/react-switch@ OK for: task-manager@1.0.0 want: ^1.1.0
+77 silly placeDep ROOT @types/node@ OK for: task-manager@1.0.0 want: ^20.0.0
+78 silly placeDep ROOT @types/react@ OK for: task-manager@1.0.0 want: ^18.0.0
+79 silly placeDep ROOT @types/react-dom@ OK for: task-manager@1.0.0 want: ^18.0.0
+80 silly placeDep ROOT autoprefixer@ OK for: task-manager@1.0.0 want: ^10.4.20
+81 silly placeDep ROOT class-variance-authority@ OK for: task-manager@1.0.0 want: ^0.7.1
+82 silly placeDep ROOT clsx@ OK for: task-manager@1.0.0 want: ^2.1.1
+83 silly placeDep ROOT concurrently@ OK for: task-manager@1.0.0 want: ^9.1.0
+84 silly placeDep ROOT date-fns@ OK for: task-manager@1.0.0 want: ^4.1.0
+85 silly placeDep ROOT eslint@ OK for: task-manager@1.0.0 want: ^8.57.1
+86 silly placeDep ROOT eslint-config-next@ OK for: task-manager@1.0.0 want: 16.0.10
+87 silly placeDep ROOT lucide-react@ OK for: task-manager@1.0.0 want: ^0.460.0
+88 silly placeDep ROOT next@ OK for: task-manager@1.0.0 want: 16.0.10
+89 silly placeDep ROOT postcss@ OK for: task-manager@1.0.0 want: ^8.4.47
+90 silly placeDep ROOT react@ OK for: task-manager@1.0.0 want: 19.2.0
+91 silly placeDep ROOT react-dom@ OK for: task-manager@1.0.0 want: 19.2.0
+92 silly placeDep ROOT react-hook-form@ OK for: task-manager@1.0.0 want: ^7.54.2
+93 silly placeDep ROOT socket.io-client@ OK for: task-manager@1.0.0 want: ^4.8.1
+94 silly placeDep ROOT sonner@ OK for: task-manager@1.0.0 want: ^1.7.1
+95 silly placeDep ROOT tailwind-merge@ OK for: task-manager@1.0.0 want: ^2.5.4
+96 silly placeDep ROOT tailwindcss@ OK for: task-manager@1.0.0 want: ^4.1.9
+97 silly placeDep ROOT typescript@ OK for: task-manager@1.0.0 want: ^5.0.0
+98 silly placeDep ROOT zod@ OK for: task-manager@1.0.0 want: ^3.24.1
+99 verbose stack Error: request to https://registry.npmjs.org/@hookform%2fresolvers failed: cache mode is 'only-if-cached' but no cached response is available.
+99 verbose stack     at cacheFetch (C:\Program Files\nodejs\node_modules\npm\node_modules\make-fetch-happen\lib\cache\index.js:12:13)
+99 verbose stack     at async fetch (C:\Program Files\nodejs\node_modules\npm\node_modules\make-fetch-happen\lib\fetch.js:98:7)
+99 verbose stack     at async RegistryFetcher.packument (C:\Program Files\nodejs\node_modules\npm\node_modules\pacote\lib\registry.js:90:19)
+99 verbose stack     at async RegistryFetcher.manifest (C:\Program Files\nodejs\node_modules\npm\node_modules\pacote\lib\registry.js:128:23)
+99 verbose stack     at async #fetchManifest (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:1202:20)
+99 verbose stack     at async #nodeFromEdge (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:1040:19)
+99 verbose stack     at async #buildDepStep (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:904:11)
+99 verbose stack     at async Arborist.buildIdealTree (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:181:7)
+99 verbose stack     at async Promise.all (index 1)
+99 verbose stack     at async Arborist.reify (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\reify.js:131:5)
+100 error code ENOTCACHED
+101 error request to https://registry.npmjs.org/@hookform%2fresolvers failed: cache mode is 'only-if-cached' but no cached response is available.
+102 silly unfinished npm timer reify 1769269698724
+103 silly unfinished npm timer reify:loadTrees 1769269698725
+104 verbose cwd C:\Users\RAZER\Desktop\task-manager
+105 verbose os Windows_NT 10.0.26100
+106 verbose node v22.11.0
+107 verbose npm  v10.9.0
+108 verbose exit 1
+109 verbose code 1
+110 error A complete log of this run can be found in: C:\Users\RAZER\Desktop\task-manager\.npm\_logs\2026-01-24T15_48_17_722Z-debug-0.log

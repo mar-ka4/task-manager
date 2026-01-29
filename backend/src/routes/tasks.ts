@@ -12,7 +12,9 @@ router.get(
   authenticateToken,
   async (req: AuthRequest, res) => {
     try {
-      const { projectId } = req.params;
+      const projectId = Array.isArray(req.params.projectId)
+        ? req.params.projectId[0]
+        : req.params.projectId;
       const userId = req.user!.id;
 
       const role = await checkProjectAccess(projectId, userId);
@@ -63,7 +65,9 @@ router.post(
   authenticateToken,
   async (req: AuthRequest, res) => {
     try {
-      const { projectId } = req.params;
+      const projectId = Array.isArray(req.params.projectId)
+        ? req.params.projectId[0]
+        : req.params.projectId;
       const userId = req.user!.id;
       const {
         title,

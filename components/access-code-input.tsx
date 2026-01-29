@@ -132,7 +132,9 @@ export function AccessCodeInput({ open, onOpenChange }: AccessCodeInputProps) {
             {code.map((char, index) => (
               <Input
                 key={index}
-                ref={(el) => (inputRefs.current[index] = el)}
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
                 type="text"
                 maxLength={1}
                 value={char}

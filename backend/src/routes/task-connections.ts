@@ -11,7 +11,9 @@ router.get(
   authenticateToken,
   async (req: AuthRequest, res) => {
     try {
-      const { projectId } = req.params;
+      const projectId = Array.isArray(req.params.projectId)
+        ? req.params.projectId[0]
+        : req.params.projectId;
       const userId = req.user!.id;
 
       const role = await checkProjectAccess(projectId, userId);
@@ -39,7 +41,9 @@ router.post(
   authenticateToken,
   async (req: AuthRequest, res) => {
     try {
-      const { projectId } = req.params;
+      const projectId = Array.isArray(req.params.projectId)
+        ? req.params.projectId[0]
+        : req.params.projectId;
       const userId = req.user!.id;
       const { from_task_id, to_task_id, from_edge, to_edge } = req.body;
 
@@ -142,7 +146,12 @@ router.delete(
   authenticateToken,
   async (req: AuthRequest, res) => {
     try {
-      const { projectId, connectionId } = req.params;
+      const projectId = Array.isArray(req.params.projectId)
+        ? req.params.projectId[0]
+        : req.params.projectId;
+      const connectionId = Array.isArray(req.params.connectionId)
+        ? req.params.connectionId[0]
+        : req.params.connectionId;
       const userId = req.user!.id;
 
       // Проверяем доступ к проекту и права на редактирование

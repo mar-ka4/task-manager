@@ -11,7 +11,9 @@ router.get(
   authenticateToken,
   async (req: AuthRequest, res) => {
     try {
-      const { projectId } = req.params;
+      const projectId = Array.isArray(req.params.projectId)
+        ? req.params.projectId[0]
+        : req.params.projectId;
       const userId = req.user!.id;
 
       const role = await checkProjectAccess(projectId, userId);
@@ -78,7 +80,12 @@ router.delete(
   authenticateToken,
   async (req: AuthRequest, res) => {
     try {
-      const { projectId, memberId } = req.params;
+      const projectId = Array.isArray(req.params.projectId)
+        ? req.params.projectId[0]
+        : req.params.projectId;
+      const memberId = Array.isArray(req.params.memberId)
+        ? req.params.memberId[0]
+        : req.params.memberId;
       const userId = req.user!.id;
 
       const role = await checkProjectAccess(projectId, userId);

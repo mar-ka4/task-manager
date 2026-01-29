@@ -431,7 +431,9 @@ export default function BoardPage() {
                 const images = Array.isArray(data.data.images) ? data.data.images : [];
                 setTaskImages((prev) => ({
                   ...prev,
-                  [data.data.id]: images.map(img => normalizeImageSrc(img) || img).filter(Boolean) as string[],
+                  [data.data.id]: images
+                    .map((img: string) => normalizeImageSrc(img) || img)
+                    .filter(Boolean) as string[],
                 }));
               }
               
@@ -943,7 +945,7 @@ export default function BoardPage() {
       setTasks(data || []);
       // Инициализируем локальные названия задач (сохраняем как HTML для форматирования)
       const titles: Record<string, string> = {};
-      (data || []).forEach((task) => {
+      (data || []).forEach((task: Task) => {
         // Если title содержит HTML теги, сохраняем их, иначе оборачиваем в текст
         titles[task.id] = task.title || '';
       });
@@ -955,7 +957,9 @@ export default function BoardPage() {
         data.reduce((acc: Record<string, string[]>, task: Task) => {
           const images = Array.isArray(task.images) ? task.images : [];
           // Нормализуем каждое изображение
-          acc[task.id] = images.map(img => normalizeImageSrc(img) || img).filter(Boolean) as string[];
+          acc[task.id] = images
+            .map((img: string) => normalizeImageSrc(img) || img)
+            .filter(Boolean) as string[];
           return acc;
         }, {})
       );
@@ -1503,6 +1507,10 @@ export default function BoardPage() {
             if ((e.target as HTMLElement).closest('[data-task-id]')) {
               return;
             }
+            // Обрабатываем среднюю кнопку мыши для панорамирования
+            if (e.button === 1) {
+              e.preventDefault();
+            }
             handleMouseDown(e);
           }}
           onMouseMove={handleMouseMove}
@@ -1520,13 +1528,6 @@ export default function BoardPage() {
             // Предотвращаем прокрутку при клике средней кнопкой
             if (e.button === 1) {
               e.preventDefault();
-            }
-          }}
-          onMouseDown={(e) => {
-            // Обрабатываем среднюю кнопку мыши для панорамирования
-            if (e.button === 1) {
-              e.preventDefault();
-              handleMouseDown(e);
             }
           }}
         >
@@ -2623,7 +2624,7 @@ export default function BoardPage() {
                         spellCheck={true}
                         onInput={(e) => {
                           const html = e.currentTarget.innerHTML;
-                          const text = e.currentTarget.innerText || e.target.textContent || '';
+                          const text = e.currentTarget.innerText || '';
                           setTaskTitles((prev) => ({ ...prev, [task.id]: html }));
                           // Обновляем цвет при вводе
                           if (text.trim()) {
@@ -2640,8 +2641,39 @@ export default function BoardPage() {
                           // Включаем подчеркивание ошибок при фокусе
                           e.currentTarget.setAttribute('spellcheck', 'true');
                           e.currentTarget.classList.add('spellcheck-active');
+
+                          const text = (e.currentTarget.innerText || e.currentTarget.textContent || '').trim();
+                          // Если это placeholder текст, пусто, или "New Task", очищаем
+                          if (text === 'Название задачи...' || text === 'New Task' || text === 'Новая задача' || !text) {
+                            e.currentTarget.innerHTML = '';
+                            e.currentTarget.style.color = 'rgba(255, 255, 255, 1)';
+                            // Устанавливаем курсор в начало
+                            const element = e.currentTarget;
+                            setTimeout(() => {
+                              // Проверяем, что элемент все еще существует и является валидным Node
+                              if (!element || !element.parentNode || !document.contains(element)) {
+                                return;
+                              }
+                              try {
+                                const range = document.createRange();
+                                const sel = window.getSelection();
+                                if (element.firstChild) {
+                                  range.setStartBefore(element.firstChild);
+                                  range.setEndAfter(element.firstChild);
+                                } else {
+                                  range.selectNodeContents(element);
+                                }
+                                if (sel) {
+                                  sel.removeAllRanges();
+                                  sel.addRange(range);
+                                }
+                              } catch (error) {
+                                console.error('Error setting cursor position:', error);
+                              }
+                            }, 0);
+                          }
                         }}
-                        onBlur={(e) => {
+                        onBlurCapture={(e) => {
                           // Отключаем подчеркивание ошибок при потере фокуса
                           e.currentTarget.setAttribute('spellcheck', 'false');
                           e.currentTarget.classList.remove('spellcheck-active');
@@ -2788,38 +2820,6 @@ export default function BoardPage() {
                                 }
                               }
                             }
-                          }
-                        }}
-                        onFocus={(e) => {
-                          const text = (e.currentTarget.innerText || e.currentTarget.textContent || '').trim();
-                          // Если это placeholder текст, пусто, или "New Task", очищаем
-                          if (text === 'Название задачи...' || text === 'New Task' || text === 'Новая задача' || !text) {
-                            e.currentTarget.innerHTML = '';
-                            e.currentTarget.style.color = 'rgba(255, 255, 255, 1)';
-                            // Устанавливаем курсор в начало
-                            const element = e.currentTarget;
-                            setTimeout(() => {
-                              // Проверяем, что элемент все еще существует и является валидным Node
-                              if (!element || !element.parentNode || !document.contains(element)) {
-                                return;
-                              }
-                              try {
-                                const range = document.createRange();
-                                const sel = window.getSelection();
-                                if (element.firstChild) {
-                                  range.setStartBefore(element.firstChild);
-                                  range.setEndAfter(element.firstChild);
-                                } else {
-                                  range.selectNodeContents(element);
-                                }
-                                range.collapse(true);
-                                sel?.removeAllRanges();
-                                sel?.addRange(range);
-                              } catch (error) {
-                                // Игнорируем ошибки при установке курсора
-                                console.warn('Failed to set cursor position:', error);
-                              }
-                            }, 0);
                           }
                         }}
                         onBlur={(e) => {

@@ -72,7 +72,9 @@ router.post('/', authenticateToken, async (req: AuthRequest, res) => {
 // Получить проект по ID
 router.get('/:projectId', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    const { projectId } = req.params;
+    const projectId = Array.isArray(req.params.projectId)
+      ? req.params.projectId[0]
+      : req.params.projectId;
     const userId = req.user!.id;
 
     const role = await checkProjectAccess(projectId, userId);
@@ -101,7 +103,9 @@ router.get('/:projectId', authenticateToken, async (req: AuthRequest, res) => {
 // Обновить проект
 router.put('/:projectId', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    const { projectId } = req.params;
+    const projectId = Array.isArray(req.params.projectId)
+      ? req.params.projectId[0]
+      : req.params.projectId;
     const { name, isPublic } = req.body;
     const userId = req.user!.id;
 
@@ -135,7 +139,9 @@ router.delete(
   authenticateToken,
   async (req: AuthRequest, res) => {
     try {
-      const { projectId } = req.params;
+      const projectId = Array.isArray(req.params.projectId)
+        ? req.params.projectId[0]
+        : req.params.projectId;
       const userId = req.user!.id;
 
       const role = await checkProjectAccess(projectId, userId);
@@ -160,7 +166,9 @@ router.post(
   authenticateToken,
   async (req: AuthRequest, res) => {
     try {
-      const { projectId } = req.params;
+      const projectId = Array.isArray(req.params.projectId)
+        ? req.params.projectId[0]
+        : req.params.projectId;
       const userId = req.user!.id;
 
       const role = await checkProjectAccess(projectId, userId);
@@ -180,7 +188,7 @@ router.post(
       };
 
       // Генерируем код и проверяем уникальность
-      let code: string;
+      let code = '';
       let isUnique = false;
       let attempts = 0;
       const maxAttempts = 10;
@@ -220,7 +228,9 @@ router.post(
   authenticateToken,
   async (req: AuthRequest, res) => {
     try {
-      const { projectId } = req.params;
+      const projectId = Array.isArray(req.params.projectId)
+        ? req.params.projectId[0]
+        : req.params.projectId;
       const userId = req.user!.id;
 
       const role = await checkProjectAccess(projectId, userId);

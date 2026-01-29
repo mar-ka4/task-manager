@@ -3699,6 +3699,7 @@ function TaskContentSection({
                         contentRefs.current[item.id] = el;
                       }
                     }}
+                    dir="ltr"
                     contentEditable={canEdit}
                     suppressContentEditableWarning
                     onInput={(e) => {
@@ -3858,6 +3859,7 @@ function TaskDescriptionSection({
       {/* Поле ввода описания */}
       <div
         ref={descriptionRef}
+        dir="ltr"
         contentEditable={canEdit}
         suppressContentEditableWarning
         onInput={(e) => {

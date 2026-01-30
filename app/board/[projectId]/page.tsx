@@ -1109,22 +1109,31 @@ export default function BoardPage() {
   const handleDeleteContentItem = async (taskId: string, itemId: string) => {
     try {
       await deleteTaskContentItem(taskId, itemId);
-      setTaskContentItems((prev) => ({
-        ...prev,
-        [taskId]: (prev[taskId] || []).filter((item) => item.id !== itemId),
-      }));
-      // Обновляем задачу в списке
+      const newItems = (taskContentItems[taskId] || []).filter((item) => item.id !== itemId);
+      setTaskContentItems((prev) => ({ ...prev, [taskId]: newItems }));
       setTasks((prev) =>
-        prev.map((t) => {
-          if (t.id === taskId) {
-            const remaining = (taskContentItems[taskId] || []).filter((item) => item.id !== itemId);
-            return { ...t, has_content: remaining.length > 0 };
-          }
-          return t;
-        })
+        prev.map((t) => (t.id === taskId ? { ...t, has_content: newItems.length > 0 } : t))
       );
     } catch (error: any) {
       toast.error(error.message || 'Ошибка удаления элемента');
+    }
+  };
+
+  // Удаление всего содержимого задачи (все пункты, блок содержимого скрывается)
+  const handleRemoveAllContent = async (taskId: string) => {
+    const items = taskContentItems[taskId] || [];
+    if (items.length === 0) return;
+    try {
+      for (const item of items) {
+        await deleteTaskContentItem(taskId, item.id);
+      }
+      setTaskContentItems((prev) => ({ ...prev, [taskId]: [] }));
+      setTasks((prev) =>
+        prev.map((t) => (t.id === taskId ? { ...t, has_content: false } : t))
+      );
+      toast.success('Содержимое удалено');
+    } catch (error: any) {
+      toast.error(error.message || 'Ошибка удаления содержимого');
     }
   };
 
@@ -2973,6 +2982,7 @@ export default function BoardPage() {
                       onAddItem={() => handleAddContentItem(task.id)}
                       onUpdateItem={(itemId, updates) => handleUpdateContentItem(task.id, itemId, updates)}
                       onDeleteItem={(itemId) => handleDeleteContentItem(task.id, itemId)}
+                      onRemoveAllContent={() => handleRemoveAllContent(task.id)}
                       onToggleComplete={(itemId, completed) => handleToggleContentComplete(task.id, itemId, completed)}
                       canEdit={canEdit}
                     />
@@ -2993,6 +3003,14 @@ export default function BoardPage() {
                         setExpandedDescriptionTasks(newExpanded);
                       }}
                       onUpdateDescription={(description) => handleUpdateTask(task.id, { description })}
+                      onClearDescription={() => {
+                        handleUpdateTask(task.id, { description: '' });
+                        setExpandedDescriptionTasks((prev) => {
+                          const next = new Set(prev);
+                          next.delete(task.id);
+                          return next;
+                        });
+                      }}
                       canEdit={canEdit}
                     />
                   )}
@@ -3004,14 +3022,14 @@ export default function BoardPage() {
                     onClick={(e) => {
                       e.stopPropagation();
                       const target = e.target as HTMLElement;
-                      if (target.closest('[data-description-toggle]') || target.closest('[data-content-toggle]')) {
+                      if (target.closest('[data-description-toggle]') || target.closest('[data-content-toggle]') || target.closest('[data-content-item-delete]')) {
                         return;
                       }
                     }}
                     onMouseDown={(e) => {
                       e.stopPropagation();
                       const target = e.target as HTMLElement;
-                      if (target.closest('[data-description-toggle]') || target.closest('[data-content-toggle]')) {
+                      if (target.closest('[data-description-toggle]') || target.closest('[data-content-toggle]') || target.closest('[data-content-item-delete]')) {
                         return;
                       }
                       // Не открываем при нажатии колесиком (для перетаскивания)
@@ -3580,6 +3598,7 @@ function TaskContentSection({
   onAddItem,
   onUpdateItem,
   onDeleteItem,
+  onRemoveAllContent,
   onToggleComplete,
   canEdit,
 }: {
@@ -3590,6 +3609,7 @@ function TaskContentSection({
   onAddItem: () => void;
   onUpdateItem: (itemId: string, updates: { content?: string; completed?: boolean }) => void;
   onDeleteItem: (itemId: string) => void;
+  onRemoveAllContent: () => void;
   onToggleComplete: (itemId: string, completed: boolean) => void;
   canEdit: boolean;
 }) {
@@ -3637,22 +3657,37 @@ function TaskContentSection({
   return (
     <div className="border-t border-white/[0.08] p-3 space-y-2">
       {/* Заголовок секции — весь ряд кликабелен для сворачивания, z-20 поверх зоны настроек */}
-      <button
-        type="button"
-        data-content-toggle
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleExpand();
-        }}
-        onMouseDown={(e) => e.stopPropagation()}
-        className="flex w-full items-center justify-between mb-2 relative z-20 text-left"
-      >
-        <span className="text-xs font-semibold uppercase tracking-wider text-white/50 flex items-center gap-2">
-          <List className="h-3.5 w-3.5" />
-          Содержимое
-        </span>
-        <ChevronUp className="h-3.5 w-3.5 text-white/40 hover:text-white/70 transition-colors shrink-0" />
-      </button>
+      <div className="flex w-full items-center justify-between mb-2 relative z-20 gap-1">
+        <button
+          type="button"
+          data-content-toggle
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleExpand();
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+          className="flex-1 flex items-center justify-between text-left min-w-0"
+        >
+          <span className="text-xs font-semibold uppercase tracking-wider text-white/50 flex items-center gap-2">
+            <List className="h-3.5 w-3.5" />
+            Содержимое
+          </span>
+          <ChevronUp className="h-3.5 w-3.5 text-white/40 hover:text-white/70 transition-colors shrink-0" />
+        </button>
+        {canEdit && contentItems.length > 0 && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (confirm('Удалить всё содержимое задачи?')) onRemoveAllContent();
+            }}
+            className="p-1 rounded text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+            title="Удалить содержимое"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
 
       {/* Список: круг слева (серый/зелёный), текст справа */}
       <div className="space-y-1 max-h-[320px] overflow-y-auto pr-1">
@@ -3729,15 +3764,21 @@ function TaskContentSection({
                     dangerouslySetInnerHTML={{ __html: item.content ? linkifyText(item.content) : (canEdit ? '<span class="text-white/30">Добавить текст...</span>' : '&nbsp;') }}
                   />
                 )}
-                {/* Удаление — absolute вверху справа, не занимает место */}
+                {/* Удаление — absolute вверху справа; z-20 чтобы поверх зоны настроек справа */}
                 {canEdit && (
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
+                      e.preventDefault();
                       onDeleteItem(item.id);
                     }}
-                    className="absolute right-0 top-0 p-0.5 rounded opacity-0 group-hover:opacity-100 text-white/40 hover:text-red-400 transition-all z-10"
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
+                    data-content-item-delete
+                    className="absolute right-0 top-0 p-0.5 rounded opacity-0 group-hover:opacity-100 text-white/40 hover:text-red-400 transition-all z-20 pointer-events-auto"
                     title="Удалить пункт"
                   >
                     <X className="h-3.5 w-3.5" />
@@ -3771,12 +3812,14 @@ function TaskDescriptionSection({
   isExpanded,
   onToggleExpand,
   onUpdateDescription,
+  onClearDescription,
   canEdit,
 }: {
   task: Task;
   isExpanded: boolean;
   onToggleExpand: () => void;
   onUpdateDescription: (description: string) => void;
+  onClearDescription?: () => void;
   canEdit: boolean;
 }) {
   const [localDescription, setLocalDescription] = useState(task.description || '');
@@ -3825,11 +3868,7 @@ function TaskDescriptionSection({
   return (
     <div className="border-t border-white/[0.08] p-3 space-y-2 relative z-20">
       {/* Заголовок секции */}
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-semibold uppercase tracking-wider text-white/50 flex items-center gap-2">
-          <Edit2 className="h-3.5 w-3.5" />
-          Описание
-        </span>
+      <div className="flex items-center justify-between mb-2 gap-1">
         <button
           data-description-toggle
           onClick={(e) => {
@@ -3841,11 +3880,29 @@ function TaskDescriptionSection({
             e.stopPropagation();
             e.preventDefault();
           }}
-          className="text-white/40 hover:text-white/70 transition-colors relative z-30"
+          className="flex-1 flex items-center justify-between text-left min-w-0"
           style={{ pointerEvents: 'auto' }}
         >
-          <ChevronUp className="h-3.5 w-3.5" />
+          <span className="text-xs font-semibold uppercase tracking-wider text-white/50 flex items-center gap-2">
+            <Edit2 className="h-3.5 w-3.5" />
+            Описание
+          </span>
+          <ChevronUp className="h-3.5 w-3.5 text-white/40 hover:text-white/70 transition-colors shrink-0" />
         </button>
+        {canEdit && task.description && onClearDescription && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (confirm('Удалить описание задачи?')) onClearDescription();
+            }}
+            className="p-1 rounded text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0 relative z-30"
+            title="Удалить описание"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
 
       {/* Описание: при редактировании — textarea, иначе — div с ссылками */}

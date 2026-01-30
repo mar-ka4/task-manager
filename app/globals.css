@@ -69,6 +69,25 @@
   }
 }
 
+/* Тонкий скроллбар (почти как на iOS) — для списка «Мои задачи» */
+.scrollbar-thin-ios {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+.scrollbar-thin-ios::-webkit-scrollbar {
+  width: 5px;
+}
+.scrollbar-thin-ios::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin-ios::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+.scrollbar-thin-ios::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
 /* Скрытие подчеркивания ошибок орфографии, когда поле не в фокусе */
 [contenteditable]:not(.spellcheck-active)::spelling-error,
 [contenteditable]:not(.spellcheck-active) *::spelling-error,

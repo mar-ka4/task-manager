@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Filter, X, User, CheckCircle2, Clock, Circle, PlayCircle, AlertTriangle, AlertCircle, ChevronRight, ChevronLeft, ArrowUpDown, Paperclip, List, ChevronDown, ChevronUp } from 'lucide-react';
+import { Filter, X, User, CheckCircle2, Clock, Circle, PlayCircle, AlertTriangle, AlertCircle, ChevronRight, ChevronLeft, ArrowUpDown, Paperclip, ChevronDown, ChevronUp } from 'lucide-react';
 import { Task, ProjectMember, TaskContentItem } from '@/lib/types';
 
 export interface FiltersPanelProps {
@@ -41,6 +41,8 @@ export function FiltersPanel({
   const [sortBy, setSortBy] = useState<'none' | 'not_completed' | 'in_progress' | 'deadline'>('none');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
+  const [expandedContentInPanel, setExpandedContentInPanel] = useState<Set<string>>(new Set());
+  const CONTENT_PREVIEW_COUNT = 3;
 
   // Функция для нормализации формата изображения base64
   const normalizeImageSrc = (image: string | null | undefined): string | null => {
@@ -262,9 +264,9 @@ export function FiltersPanel({
         )}
         {/* Контент панели - виден только когда открыто */}
         {isOpen && (
-          <div className="h-full overflow-y-auto p-6">
+          <div className="h-full flex flex-col overflow-hidden p-6">
             {/* Переключатель режимов */}
-            <div className="mb-6 flex gap-2 rounded-lg bg-white/[0.05] p-1">
+            <div className="flex-shrink-0 mb-6 flex gap-2 rounded-lg bg-white/[0.05] p-1">
               <button
                 onClick={() => setViewMode('all')}
                 className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
@@ -288,6 +290,7 @@ export function FiltersPanel({
             </div>
 
             {viewMode === 'all' ? (
+              <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin-ios">
               <>
                 {/* Заголовок */}
                 <div className="mb-6 flex items-center justify-between">
@@ -456,29 +459,28 @@ export function FiltersPanel({
               </div>
             </div>
               </>
+              </div>
             ) : (
               <>
-                {/* Список моих задач */}
-                <div className="mb-4">
-                  <div className="mb-4">
-                    <div className="mb-4 flex items-center justify-between gap-2">
-                      <h2 className="text-lg font-semibold text-white">Мои задачи</h2>
-                      {/* Блок сортировки */}
-                      <div className="relative">
-                        <select
-                          value={sortBy}
-                          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                          className="appearance-none bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-1.5 pr-8 text-sm text-white/70 hover:text-white hover:bg-white/[0.08] transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                        >
-                          <option value="none" className="bg-zinc-900 text-white">Все</option>
-                          <option value="not_completed" className="bg-zinc-900 text-white">Не выполненные</option>
-                          <option value="in_progress" className="bg-zinc-900 text-white">В работе</option>
-                          <option value="deadline" className="bg-zinc-900 text-white">По дедлайну</option>
-                        </select>
-                        <ArrowUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/50 pointer-events-none" />
-                      </div>
-                    </div>
+                {/* Заголовок «Мои задачи» + сортировка — без скролла */}
+                <div className="flex-shrink-0 mb-4 flex items-center justify-between gap-2">
+                  <h2 className="text-lg font-semibold text-white">Мои задачи</h2>
+                  <div className="relative">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                      className="appearance-none bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-1.5 pr-8 text-sm text-white/70 hover:text-white hover:bg-white/[0.08] transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    >
+                      <option value="none" className="bg-zinc-900 text-white">Все</option>
+                      <option value="not_completed" className="bg-zinc-900 text-white">Не выполненные</option>
+                      <option value="in_progress" className="bg-zinc-900 text-white">В работе</option>
+                      <option value="deadline" className="bg-zinc-900 text-white">По дедлайну</option>
+                    </select>
+                    <ArrowUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/50 pointer-events-none" />
                   </div>
+                </div>
+                {/* Список задач — скролл только здесь, тонкий скроллбар */}
+                <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin-ios pr-1">
                   {myTasks.length === 0 ? (
                     <div className="text-center py-8 text-white/40 text-sm">
                       У вас нет назначенных задач
@@ -504,11 +506,15 @@ export function FiltersPanel({
                           return 'border-white/[0.08]';
                         };
 
+                        const contentItems = (taskContentItems[task.id] || []).sort((a, b) => a.position - b.position);
+                        const showContentExpand = contentItems.length > CONTENT_PREVIEW_COUNT;
+                        const visibleContentItems = expandedContentInPanel.has(task.id) ? contentItems : contentItems.slice(0, CONTENT_PREVIEW_COUNT);
+
                         return (
                           <div
                             key={task.id}
                             onClick={() => onTaskClick?.(task)}
-                            className={`relative rounded-lg border ${getBorderColor()} bg-white/[0.02] p-3 cursor-pointer transition-all hover:bg-white/[0.06] ${
+                            className={`relative rounded-lg border ${getBorderColor()} bg-white/[0.02] p-3 pr-9 cursor-pointer transition-all hover:bg-white/[0.06] ${
                               task.marker_type === 'urgent' 
                                 ? 'hover:border-red-500/60' 
                                 : task.marker_type === 'warning'
@@ -518,7 +524,17 @@ export function FiltersPanel({
                                 : 'hover:border-white/[0.12]'
                             }`}
                           >
-                            {/* Маркер задачи */}
+                            {/* Статус + дедлайн — иконки в правом верхнем углу */}
+                            <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
+                              {task.deadline && (
+                                <span className={`flex items-center gap-0.5 text-[10px] ${overdue ? 'text-red-400' : 'text-white/40'}`} title={formattedDate ?? undefined}>
+                                  <Clock className="h-3 w-3" />
+                                </span>
+                              )}
+                              <span title={getStatusName(task.status)}>{getStatusIcon(task.status)}</span>
+                            </div>
+
+                            {/* Маркер задачи (пометка) */}
                             {task.marker_type && (
                               <div className="absolute -top-1.5 -left-1.5 z-40">
                                 {task.marker_type === 'urgent' && (
@@ -539,16 +555,16 @@ export function FiltersPanel({
                               </div>
                             )}
 
-                            {/* Заголовок задачи */}
-                            <div className="mb-2">
+                            {/* Заголовок */}
+                            <div className="mb-1.5 pr-6">
                               <h3 className="text-sm font-medium text-white line-clamp-2">
                                 {task.title || 'Без названия'}
                               </h3>
                             </div>
 
-                            {/* Описание (если есть) — с развернуть/свернуть */}
+                            {/* Описание — стрелка в правом нижнем углу для разворота */}
                             {task.description && (
-                              <div className="mb-2">
+                              <div className="relative mb-2 pr-5">
                                 <p className={`text-xs text-white/60 ${expandedDescriptions.has(task.id) ? '' : 'line-clamp-2'}`}>
                                   {task.description}
                                 </p>
@@ -563,52 +579,66 @@ export function FiltersPanel({
                                       return next;
                                     });
                                   }}
-                                  className="mt-0.5 text-xs text-white/50 hover:text-white/80 transition-colors"
+                                  className="absolute bottom-0 right-0 p-0.5 text-white/40 hover:text-white/70 transition-colors"
+                                  title={expandedDescriptions.has(task.id) ? 'Свернуть' : 'Развернуть'}
                                 >
                                   {expandedDescriptions.has(task.id) ? (
-                                    <>Свернуть <ChevronUp className="inline h-3 w-3 align-middle" /></>
+                                    <ChevronUp className="h-3.5 w-3.5" />
                                   ) : (
-                                    <>Развернуть <ChevronDown className="inline h-3 w-3 align-middle" /></>
+                                    <ChevronDown className="h-3.5 w-3.5" />
                                   )}
                                 </button>
                               </div>
                             )}
 
-                            {/* Пункты содержимого (если загружены) */}
-                            {task.has_content && (taskContentItems[task.id]?.length ?? 0) > 0 && (
-                              <div className="mb-2 space-y-1">
-                                <div className="flex items-center gap-1.5 text-xs text-white/50 mb-1">
-                                  <List className="h-3.5 w-3.5" />
-                                  <span>Содержимое</span>
-                                </div>
-                                {(taskContentItems[task.id] || [])
-                                  .sort((a, b) => a.position - b.position)
-                                  .map((item) => (
-                                    <div key={item.id} className="flex items-start gap-2 text-xs text-white/60">
-                                      <span className={`shrink-0 mt-0.5 h-3 w-3 rounded-full border ${
-                                        item.completed ? 'bg-emerald-500 border-emerald-400' : 'bg-white/[0.12] border-white/30'
-                                      }`} />
-                                      <span className={item.completed ? 'line-through opacity-60' : ''}>
-                                        {item.content || '—'}
-                                      </span>
-                                    </div>
-                                  ))}
+                            {/* Пункты без заголовка «Содержимое»: 3 шт + раскрытие вниз */}
+                            {contentItems.length > 0 && (
+                              <div className="mb-2 space-y-0.5">
+                                {visibleContentItems.map((item) => (
+                                  <div key={item.id} className="flex items-start gap-2 text-xs text-white/60">
+                                    <span className={`shrink-0 mt-0.5 h-2.5 w-2.5 rounded-full border ${
+                                      item.completed ? 'bg-emerald-500 border-emerald-400' : 'bg-white/[0.12] border-white/30'
+                                    }`} />
+                                    <span className={item.completed ? 'line-through opacity-60' : ''}>
+                                      {item.content || '—'}
+                                    </span>
+                                  </div>
+                                ))}
+                                {showContentExpand && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setExpandedContentInPanel((prev) => {
+                                        const next = new Set(prev);
+                                        if (next.has(task.id)) next.delete(task.id);
+                                        else next.add(task.id);
+                                        return next;
+                                      });
+                                    }}
+                                    className="flex items-center gap-0.5 text-[10px] text-white/40 hover:text-white/60 transition-colors mt-0.5"
+                                  >
+                                    {expandedContentInPanel.has(task.id) ? (
+                                      <>Свернуть <ChevronUp className="h-3 w-3" /></>
+                                    ) : (
+                                      <>Ещё {contentItems.length - CONTENT_PREVIEW_COUNT} <ChevronDown className="h-3 w-3" /></>
+                                    )}
+                                  </button>
+                                )}
                               </div>
                             )}
 
                             {/* Изображения и файлы */}
                             {((task.images && task.images.length > 0) || (task.files && task.files.length > 0)) && (
-                              <div className="mb-3">
-                                <div className="flex flex-wrap gap-2">
-                                  {/* Изображения */}
+                              <div className="mb-2">
+                                <div className="flex flex-wrap gap-1.5">
                                   {task.images && task.images.length > 0 && task.images.map((image, index) => {
                                     const imageSrc = normalizeImageSrc(image);
                                     if (!imageSrc) return null;
-                                    
                                     return (
                                       <div
                                         key={`img-${index}`}
-                                        className="relative aspect-square w-12 rounded-md overflow-hidden bg-white/[0.06] border border-white/[0.08] cursor-pointer"
+                                        className="relative aspect-square w-10 rounded overflow-hidden bg-white/[0.06] border border-white/[0.08] cursor-pointer"
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setSelectedImage(imageSrc);
@@ -623,20 +653,18 @@ export function FiltersPanel({
                                       </div>
                                     );
                                   })}
-                                  
-                                  {/* Файлы */}
                                   {task.files && task.files.length > 0 && task.files.map((file, index) => (
                                     <div
                                       key={`file-${index}`}
-                                      className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/[0.06] border border-white/[0.08] hover:bg-white/[0.1] transition-colors"
+                                      className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08]"
                                       onClick={(e) => e.stopPropagation()}
                                     >
-                                      <Paperclip className="h-3 w-3 text-white/60 flex-shrink-0" />
+                                      <Paperclip className="h-2.5 w-2.5 text-white/50 flex-shrink-0" />
                                       <a
                                         href={file.data}
                                         download={file.name}
                                         onClick={(e) => e.stopPropagation()}
-                                        className="text-xs text-white/80 hover:text-white truncate max-w-[120px]"
+                                        className="text-[10px] text-white/70 hover:text-white truncate max-w-[100px]"
                                         title={file.name}
                                       >
                                         {file.name}
@@ -646,24 +674,6 @@ export function FiltersPanel({
                                 </div>
                               </div>
                             )}
-
-                            {/* Статус и дедлайн */}
-                            <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/[0.08]">
-                              <div className="flex items-center gap-2">
-                                {getStatusIcon(task.status)}
-                                <span className={`text-xs ${getStatusColor(task.status)}`}>
-                                  {getStatusName(task.status)}
-                                </span>
-                              </div>
-                              {task.deadline && (
-                                <div className={`flex items-center gap-1 text-xs ${
-                                  overdue ? 'text-red-400' : 'text-white/50'
-                                }`}>
-                                  <Clock className="h-3 w-3" />
-                                  <span>{formattedDate}</span>
-                                </div>
-                              )}
-                            </div>
                           </div>
                         );
                       })}

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Filter, X, User, CheckCircle2, Clock, Circle, PlayCircle, AlertTriangle, AlertCircle, ChevronRight, ChevronLeft, ArrowUpDown, Paperclip, List, ChevronDown, ChevronUp } from 'lucide-react';
 import { Task, ProjectMember, TaskContentItem } from '@/lib/types';
 
-interface FiltersPanelProps {
+export interface FiltersPanelProps {
   isOpen: boolean;
   onToggle: () => void;
   tasks: Task[];
@@ -22,7 +22,7 @@ interface FiltersPanelProps {
   currentUserId: string | null;
   onTaskClick?: (task: Task) => void;
   taskContentItems?: Record<string, TaskContentItem[]>;
-  onLoadTaskContent?: (taskId: string) => void;
+  onLoadTaskContent?: (taskId: string) => void | Promise<void>;
 }
 
 export function FiltersPanel({
@@ -35,6 +35,7 @@ export function FiltersPanel({
   currentUserId,
   onTaskClick,
   taskContentItems = {},
+  onLoadTaskContent,
 }: FiltersPanelProps) {
   const [viewMode, setViewMode] = useState<'all' | 'my'>('all');
   const [sortBy, setSortBy] = useState<'none' | 'not_completed' | 'in_progress' | 'deadline'>('none');

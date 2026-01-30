@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Filter, X, User, CheckCircle2, Clock, Circle, PlayCircle, AlertTriangle, AlertCircle, ChevronRight, ChevronLeft, ArrowUpDown, Paperclip } from 'lucide-react';
-import { Task, ProjectMember } from '@/lib/types';
+import { useState, useEffect } from 'react';
+import { Filter, X, User, CheckCircle2, Clock, Circle, PlayCircle, AlertTriangle, AlertCircle, ChevronRight, ChevronLeft, ArrowUpDown, Paperclip, List, ChevronDown, ChevronUp } from 'lucide-react';
+import { Task, ProjectMember, TaskContentItem } from '@/lib/types';
 
 interface FiltersPanelProps {
   isOpen: boolean;
@@ -21,6 +21,8 @@ interface FiltersPanelProps {
   }) => void;
   currentUserId: string | null;
   onTaskClick?: (task: Task) => void;
+  taskContentItems?: Record<string, TaskContentItem[]>;
+  onLoadTaskContent?: (taskId: string) => void;
 }
 
 export function FiltersPanel({
@@ -32,10 +34,12 @@ export function FiltersPanel({
   onFiltersChange,
   currentUserId,
   onTaskClick,
+  taskContentItems = {},
 }: FiltersPanelProps) {
   const [viewMode, setViewMode] = useState<'all' | 'my'>('all');
   const [sortBy, setSortBy] = useState<'none' | 'not_completed' | 'in_progress' | 'deadline'>('none');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
 
   // Функция для нормализации формата изображения base64
   const normalizeImageSrc = (image: string | null | undefined): string | null => {
@@ -106,11 +110,23 @@ export function FiltersPanel({
     ? tasks.filter((task) => task.assignee_id === currentUserId)
     : [];
 
+  // По умолчанию задачи с пометкой (marker_type) — вверху списка
+  const sortByMarkerFirst = (list: Task[]) => {
+    return [...list].sort((a, b) => {
+      const aHas = a.marker_type ? 1 : 0;
+      const bHas = b.marker_type ? 1 : 0;
+      if (bHas !== aHas) return bHas - aHas;
+      return 0;
+    });
+  };
+
   // Применяем сортировку
   if (sortBy === 'not_completed') {
     myTasks = myTasks.filter((task) => task.status !== 'completed');
+    myTasks = sortByMarkerFirst(myTasks);
   } else if (sortBy === 'in_progress') {
     myTasks = myTasks.filter((task) => task.status === 'in_progress');
+    myTasks = sortByMarkerFirst(myTasks);
   } else if (sortBy === 'deadline') {
     myTasks = [...myTasks].sort((a, b) => {
       if (!a.deadline && !b.deadline) return 0;
@@ -118,6 +134,10 @@ export function FiltersPanel({
       if (!b.deadline) return -1;
       return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
     });
+    myTasks = sortByMarkerFirst(myTasks);
+  } else {
+    // sortBy === 'none' — по умолчанию с пометкой вверху
+    myTasks = sortByMarkerFirst(myTasks);
   }
 
   // Форматирование даты
@@ -192,6 +212,17 @@ export function FiltersPanel({
         return 'Не начато';
     }
   };
+
+  // При открытии «Мои задачи» подгружаем содержимое для задач с has_content
+  useEffect(() => {
+    if (!isOpen || viewMode !== 'my' || !onLoadTaskContent || !currentUserId) return;
+    const my = tasks.filter((t) => t.assignee_id === currentUserId);
+    my.forEach((task) => {
+      if (task.has_content && !(taskContentItems[task.id]?.length)) {
+        onLoadTaskContent(task.id);
+      }
+    });
+  }, [isOpen, viewMode, currentUserId, tasks, taskContentItems, onLoadTaskContent]);
 
   return (
     <>
@@ -514,11 +545,54 @@ export function FiltersPanel({
                               </h3>
                             </div>
 
-                            {/* Описание (если есть) */}
+                            {/* Описание (если есть) — с развернуть/свернуть */}
                             {task.description && (
-                              <p className="mb-2 text-xs text-white/50 line-clamp-2">
-                                {task.description}
-                              </p>
+                              <div className="mb-2">
+                                <p className={`text-xs text-white/60 ${expandedDescriptions.has(task.id) ? '' : 'line-clamp-2'}`}>
+                                  {task.description}
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpandedDescriptions((prev) => {
+                                      const next = new Set(prev);
+                                      if (next.has(task.id)) next.delete(task.id);
+                                      else next.add(task.id);
+                                      return next;
+                                    });
+                                  }}
+                                  className="mt-0.5 text-xs text-white/50 hover:text-white/80 transition-colors"
+                                >
+                                  {expandedDescriptions.has(task.id) ? (
+                                    <>Свернуть <ChevronUp className="inline h-3 w-3 align-middle" /></>
+                                  ) : (
+                                    <>Развернуть <ChevronDown className="inline h-3 w-3 align-middle" /></>
+                                  )}
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Пункты содержимого (если загружены) */}
+                            {task.has_content && (taskContentItems[task.id]?.length ?? 0) > 0 && (
+                              <div className="mb-2 space-y-1">
+                                <div className="flex items-center gap-1.5 text-xs text-white/50 mb-1">
+                                  <List className="h-3.5 w-3.5" />
+                                  <span>Содержимое</span>
+                                </div>
+                                {(taskContentItems[task.id] || [])
+                                  .sort((a, b) => a.position - b.position)
+                                  .map((item) => (
+                                    <div key={item.id} className="flex items-start gap-2 text-xs text-white/60">
+                                      <span className={`shrink-0 mt-0.5 h-3 w-3 rounded-full border ${
+                                        item.completed ? 'bg-emerald-500 border-emerald-400' : 'bg-white/[0.12] border-white/30'
+                                      }`} />
+                                      <span className={item.completed ? 'line-through opacity-60' : ''}>
+                                        {item.content || '—'}
+                                      </span>
+                                    </div>
+                                  ))}
+                              </div>
                             )}
 
                             {/* Изображения и файлы */}

@@ -3721,10 +3721,10 @@ function TaskContentSection({
                     ref={contentInputRef}
                     value={editingContentValue}
                     onChange={(e) => setEditingContentValue(e.target.value)}
-                    onBlur={() => {
-                      const trimmed = editingContentValue.trim();
-                      if (trimmed !== item.content) {
-                        onUpdateItem(item.id, { content: trimmed || item.content });
+                    onBlur={(e) => {
+                      const value = (e.target as HTMLTextAreaElement).value.trim();
+                      if (value !== item.content) {
+                        onUpdateItem(item.id, { content: value || item.content });
                       }
                       setEditingContentId(null);
                     }}
@@ -3911,8 +3911,10 @@ function TaskDescriptionSection({
           ref={descriptionInputRef}
           value={localDescription}
           onChange={(e) => setLocalDescription(e.target.value)}
-          onBlur={() => {
-            onUpdateDescription(localDescription);
+          onBlur={(e) => {
+            const value = e.currentTarget.value;
+            onUpdateDescription(value);
+            setLocalDescription(value);
             setIsDescriptionFocused(false);
           }}
           onClick={(e) => e.stopPropagation()}

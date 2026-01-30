@@ -2029,8 +2029,8 @@ export default function BoardPage() {
                       taskElement.style.cursor = 'move';
                       setHoveredBorder(null);
                     }
-                    // Если наведены на текст - курсор text
-                    else if (target.closest('[contenteditable]')) {
+                    // Если наведены на текст (название, описание, содержимое) — курсор text
+                    else if (target.closest('[contenteditable]') || target.closest('textarea')) {
                       taskElement.style.cursor = 'text';
                       setHoveredBorder(null);
                     }
@@ -2089,6 +2089,7 @@ export default function BoardPage() {
                       // Проверяем, что клик не на интерактивных элементах
                       const target = e.target as HTMLElement;
                       if (!target.closest('[contenteditable]') && 
+                          !target.closest('textarea') &&
                           !target.closest('[data-settings-zone]') && 
                           !target.closest('[data-resize-handle]') &&
                           !target.closest('button')) {
@@ -3000,18 +3001,15 @@ export default function BoardPage() {
                     className="absolute top-0 right-0 w-12 h-full z-10"
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Проверяем, не кликнули ли на кнопку развертывания описания
                       const target = e.target as HTMLElement;
-                      if (target.closest('[data-description-toggle]')) {
+                      if (target.closest('[data-description-toggle]') || target.closest('[data-content-toggle]')) {
                         return;
                       }
-                      // Больше не открываем панель настроек при клике на зону
                     }}
                     onMouseDown={(e) => {
                       e.stopPropagation();
-                      // Проверяем, не кликнули ли на кнопку развертывания описания
                       const target = e.target as HTMLElement;
-                      if (target.closest('[data-description-toggle]')) {
+                      if (target.closest('[data-description-toggle]') || target.closest('[data-content-toggle]')) {
                         return;
                       }
                       // Не открываем при нажатии колесиком (для перетаскивания)
@@ -3595,20 +3593,16 @@ function TaskContentSection({
 }) {
   const completedCount = contentItems.filter((item) => item.completed).length;
   const totalCount = contentItems.length;
-  const contentRefs = useRef<Record<string, HTMLDivElement>>({});
+  const [editingContentId, setEditingContentId] = useState<string | null>(null);
+  const [editingContentValue, setEditingContentValue] = useState('');
+  const contentInputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Обновляем HTML с ссылками для элементов содержимого
   useEffect(() => {
-    contentItems.forEach((item) => {
-      const el = contentRefs.current[item.id];
-      if (el && document.activeElement !== el) {
-        const currentText = el.innerText || '';
-        if (currentText !== item.content) {
-          el.innerHTML = linkifyText(item.content);
-        }
-      }
-    });
-  }, [contentItems]);
+    if (editingContentId && contentInputRef.current) {
+      contentInputRef.current.focus();
+      contentInputRef.current.setSelectionRange(editingContentValue.length, editingContentValue.length);
+    }
+  }, [editingContentId]);
 
   if (!isExpanded) {
     return (
@@ -3632,137 +3626,126 @@ function TaskContentSection({
 
   return (
     <div className="border-t border-white/[0.08] bg-black/10 p-3 space-y-2">
-      {/* Заголовок секции */}
-      <div className="flex items-center justify-between mb-2">
+      {/* Заголовок секции — весь ряд кликабелен для сворачивания, z-20 поверх зоны настроек */}
+      <button
+        type="button"
+        data-content-toggle
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleExpand();
+        }}
+        onMouseDown={(e) => e.stopPropagation()}
+        className="flex w-full items-center justify-between mb-2 relative z-20 text-left"
+      >
         <span className="text-xs font-semibold uppercase tracking-wider text-white/50 flex items-center gap-2">
           <List className="h-3.5 w-3.5" />
           Содержимое
         </span>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleExpand();
-          }}
-          className="text-white/40 hover:text-white/70 transition-colors"
-        >
-          <ChevronUp className="h-3.5 w-3.5" />
-        </button>
-      </div>
+        <ChevronUp className="h-3.5 w-3.5 text-white/40 hover:text-white/70 transition-colors shrink-0" />
+      </button>
 
-      {/* Список элементов */}
-      <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+      {/* Список: круг слева (серый/зелёный), текст справа */}
+      <div className="space-y-1 max-h-[320px] overflow-y-auto pr-1">
         {contentItems.length === 0 ? (
-          <div className="text-center py-4 text-xs text-white/40">
+          <div className="text-center py-3 text-xs text-white/40">
             Нет элементов. Добавьте первый пункт.
           </div>
         ) : (
           contentItems
             .sort((a, b) => a.position - b.position)
-            .map((item, index) => (
-              <div key={item.id} className="group relative">
-                {/* Кнопка удаления (при hover) */}
-                {canEdit && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteItem(item.id);
-                    }}
-                    className="absolute right-1 top-1 z-10 opacity-0 group-hover:opacity-100 rounded p-0.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                )}
-
-                <div className="flex items-start gap-2">
-                  {/* Номер/чекбокс */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (canEdit) {
-                        onToggleComplete(item.id, !item.completed);
+            .map((item) => (
+              <div key={item.id} className="group flex items-center gap-2 min-h-[28px]">
+                {/* Кружок: серый — не выполнено, зелёный — выполнено */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (canEdit) onToggleComplete(item.id, !item.completed);
+                  }}
+                  disabled={!canEdit}
+                  className={`shrink-0 rounded-full border transition-colors ${
+                    item.completed
+                      ? 'h-4 w-4 bg-emerald-500 border-emerald-400'
+                      : 'h-4 w-4 bg-white/[0.12] border-white/30 hover:bg-white/[0.2]'
+                  } ${!canEdit ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                  title={item.completed ? 'Отметить невыполненным' : 'Выполнено'}
+                />
+                {/* Текст */}
+                {canEdit && editingContentId === item.id ? (
+                  <textarea
+                    ref={contentInputRef}
+                    value={editingContentValue}
+                    onChange={(e) => setEditingContentValue(e.target.value)}
+                    onBlur={() => {
+                      const trimmed = editingContentValue.trim();
+                      if (trimmed !== item.content) {
+                        onUpdateItem(item.id, { content: trimmed || item.content });
                       }
+                      setEditingContentId(null);
                     }}
-                    disabled={!canEdit}
-                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold transition-all ${
-                      item.completed
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
-                        : 'bg-white/[0.08] text-white/60 hover:bg-white/[0.14] border border-white/20'
-                    } ${!canEdit ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                  >
-                    {index + 1}
-                  </button>
-
-                  {/* Текст элемента */}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className={`flex-1 min-w-0 min-h-[24px] resize-none border-0 bg-transparent px-1 py-0.5 text-xs leading-relaxed text-white placeholder:text-white/30 focus:outline-none ${
+                      item.completed ? 'line-through opacity-60' : ''
+                    }`}
+                    style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                    placeholder="Текст пункта..."
+                    rows={1}
+                  />
+                ) : (
                   <div
-                    ref={(el) => {
-                      if (el) {
-                        contentRefs.current[item.id] = el;
-                      }
-                    }}
-                    dir="ltr"
-                    contentEditable={canEdit}
-                    suppressContentEditableWarning
-                    onInput={(e) => {
-                      if (canEdit) {
-                        const text = e.currentTarget.innerText || '';
-                        onUpdateItem(item.id, { content: text });
-                      }
-                    }}
-                    onBlur={(e) => {
-                      if (canEdit) {
-                        const text = e.currentTarget.innerText || '';
-                        onUpdateItem(item.id, { content: text });
-                        // Обновляем HTML с ссылками после редактирования
-                        setTimeout(() => {
-                          if (document.activeElement !== e.currentTarget) {
-                            e.currentTarget.innerHTML = linkifyText(text);
-                          }
-                        }, 100);
-                      }
-                    }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Обрабатываем клики по ссылкам
                       const target = e.target as HTMLElement;
                       if (target.tagName === 'A') {
-                        e.preventDefault();
                         const href = target.getAttribute('href');
-                        if (href) {
-                          window.open(href, '_blank', 'noopener,noreferrer');
-                        }
+                        if (href) window.open(href, '_blank', 'noopener,noreferrer');
+                        return;
+                      }
+                      if (canEdit) {
+                        setEditingContentId(item.id);
+                        setEditingContentValue(item.content);
                       }
                     }}
                     onMouseDown={(e) => {
                       e.stopPropagation();
-                      // Не начинаем редактирование при клике на ссылку
                       const target = e.target as HTMLElement;
-                      if (target.tagName === 'A') {
-                        e.preventDefault();
-                      }
+                      if (target.tagName === 'A') return;
                     }}
-                    className={`flex-1 min-h-[32px] resize-none border-0 bg-white/[0.06] px-2.5 py-2 text-xs leading-relaxed text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-white/20 rounded-lg transition-all ${
-                      item.completed ? 'line-through opacity-50' : ''
-                    } ${!canEdit ? 'cursor-not-allowed opacity-50' : ''}`}
-                    style={{ 
-                      whiteSpace: 'pre-wrap',
-                      wordBreak: 'break-word',
-                    }}
-                    dangerouslySetInnerHTML={{ __html: linkifyText(item.content) }}
+                    className={`flex-1 min-w-0 px-1 py-0.5 text-xs leading-relaxed text-white ${
+                      item.completed ? 'line-through opacity-60' : ''
+                    } ${canEdit ? 'cursor-text' : 'cursor-default opacity-80'}`}
+                    style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                    dangerouslySetInnerHTML={{ __html: item.content ? linkifyText(item.content) : (canEdit ? '<span class="text-white/30">Добавить текст...</span>' : '&nbsp;') }}
                   />
-                </div>
+                )}
+                {/* Удаление — по hover */}
+                {canEdit && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteItem(item.id);
+                    }}
+                    className="shrink-0 p-0.5 rounded opacity-0 group-hover:opacity-100 text-white/40 hover:text-red-400 transition-all"
+                    title="Удалить пункт"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
             ))
         )}
       </div>
 
-      {/* Кнопка добавления */}
       {canEdit && (
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             onAddItem();
           }}
-          className="w-full mt-2 flex items-center justify-center gap-2 rounded-lg bg-blue-500/[0.15] text-blue-400 hover:bg-blue-500/25 transition-all py-2 text-xs font-semibold border border-blue-500/20"
+          className="w-full mt-1.5 flex items-center justify-center gap-1.5 py-1.5 text-xs text-white/50 hover:text-white/70 hover:bg-white/[0.06] rounded transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
           Добавить пункт
@@ -3772,7 +3755,7 @@ function TaskContentSection({
   );
 }
 
-// Компонент описания задачи
+// Компонент описания задачи (textarea при редактировании, div с linkify при просмотре)
 function TaskDescriptionSection({
   task,
   isExpanded,
@@ -3787,21 +3770,20 @@ function TaskDescriptionSection({
   canEdit: boolean;
 }) {
   const [localDescription, setLocalDescription] = useState(task.description || '');
-  const descriptionRef = useRef<HTMLDivElement>(null);
+  const [isDescriptionFocused, setIsDescriptionFocused] = useState(false);
+  const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setLocalDescription(task.description || '');
   }, [task.description]);
 
-  // Обновляем HTML с ссылками для описания
   useEffect(() => {
-    if (descriptionRef.current && document.activeElement !== descriptionRef.current) {
-      const currentText = descriptionRef.current.innerText || '';
-      if (currentText !== localDescription) {
-        descriptionRef.current.innerHTML = linkifyText(localDescription);
-      }
+    if (isDescriptionFocused && descriptionInputRef.current) {
+      descriptionInputRef.current.focus();
+      const len = localDescription.length;
+      descriptionInputRef.current.setSelectionRange(len, len);
     }
-  }, [localDescription]);
+  }, [isDescriptionFocused]);
 
   if (!isExpanded) {
     return (
@@ -3856,70 +3838,51 @@ function TaskDescriptionSection({
         </button>
       </div>
 
-      {/* Поле ввода описания */}
-      <div
-        ref={descriptionRef}
-        dir="ltr"
-        contentEditable={canEdit}
-        suppressContentEditableWarning
-        onInput={(e) => {
-          if (canEdit) {
-            const text = e.currentTarget.innerText || '';
-            setLocalDescription(text);
-          }
-        }}
-        onBlur={(e) => {
-          if (canEdit) {
-            const text = e.currentTarget.innerText || '';
-            onUpdateDescription(text);
-            // Отключаем проверку орфографии при потере фокуса
-            e.currentTarget.setAttribute('spellcheck', 'false');
-            e.currentTarget.classList.remove('spellcheck-active');
-            // Обновляем HTML с ссылками после редактирования
-            setTimeout(() => {
-              if (document.activeElement !== e.currentTarget) {
-                e.currentTarget.innerHTML = linkifyText(text);
-              }
-            }, 100);
-          }
-        }}
-        onFocus={(e) => {
-          // Включаем проверку орфографии при фокусе
-          if (canEdit) {
-            e.currentTarget.setAttribute('spellcheck', 'true');
-            e.currentTarget.classList.add('spellcheck-active');
-          }
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          // Обрабатываем клики по ссылкам
-          const target = e.target as HTMLElement;
-          if (target.tagName === 'A') {
-            e.preventDefault();
-            const href = target.getAttribute('href');
-            if (href) {
-              window.open(href, '_blank', 'noopener,noreferrer');
+      {/* Описание: при редактировании — textarea, иначе — div с ссылками */}
+      {canEdit && isDescriptionFocused ? (
+        <textarea
+          ref={descriptionInputRef}
+          value={localDescription}
+          onChange={(e) => setLocalDescription(e.target.value)}
+          onBlur={() => {
+            onUpdateDescription(localDescription);
+            setIsDescriptionFocused(false);
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          className="w-full min-h-[60px] resize-none border-0 bg-transparent px-0 py-0 text-xs leading-relaxed text-white/60 placeholder:text-white/30 focus:outline-none focus:ring-0"
+          style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+          placeholder="Введите описание задачи..."
+          rows={4}
+        />
+      ) : (
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'A') {
+              const href = target.getAttribute('href');
+              if (href) window.open(href, '_blank', 'noopener,noreferrer');
+              return;
             }
-          }
-        }}
-        onMouseDown={(e) => {
-          e.stopPropagation();
-          // Не начинаем редактирование при клике на ссылку
-          const target = e.target as HTMLElement;
-          if (target.tagName === 'A') {
-            e.preventDefault();
-          }
-        }}
-        className={`w-full min-h-[60px] resize-none border-0 bg-transparent text-xs leading-relaxed text-white/60 placeholder:text-white/30 focus:outline-none transition-all ${
-          !canEdit ? 'cursor-not-allowed opacity-50' : ''
-        }`}
-        style={{ 
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
-        }}
-        data-placeholder={canEdit ? 'Введите описание задачи...' : 'Нет описания'}
-        dangerouslySetInnerHTML={{ __html: linkifyText(localDescription) }}
-      />
+            if (canEdit) {
+              setIsDescriptionFocused(true);
+            }
+          }}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'A') return;
+          }}
+          className={`w-full min-h-[60px] text-xs leading-relaxed text-white/60 focus:outline-none ${
+            canEdit ? 'cursor-text' : 'cursor-default opacity-50'
+          }`}
+          style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+          dangerouslySetInnerHTML={{
+            __html: localDescription ? linkifyText(localDescription) : (canEdit ? '<span class="text-white/30">Введите описание задачи...</span>' : '<span class="text-white/30">Нет описания</span>'),
+          }}
+        />
+      )}
     </div>
   );
 }

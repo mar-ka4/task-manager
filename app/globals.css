@@ -59,6 +59,11 @@
   }
 }
 
+/* Safe area для фиксированных элементов на мобильных */
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

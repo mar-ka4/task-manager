@@ -1337,33 +1337,33 @@ export default function BoardPage() {
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-neutral-950 via-zinc-950 to-neutral-900">
       {/* Верхняя панель (Header) */}
-      <header className="fixed top-0 left-0 right-0 h-16 z-50 border-b border-white/[0.08] bg-zinc-950/60 backdrop-blur-2xl px-6 py-3.5">
-        <div className="flex items-center justify-between h-full">
+      <header className="fixed top-0 left-0 right-0 h-14 sm:h-16 z-50 border-b border-white/[0.08] bg-zinc-950/60 backdrop-blur-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3.5 safe-area-inset-top">
+        <div className="flex items-center justify-between h-full gap-2 min-w-0">
           {/* Левая часть */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
         <button
           onClick={() => router.push('/projects')}
-              className="rounded-xl p-2 text-white/50 transition-all hover:bg-white/[0.06] hover:text-white"
+              className="rounded-xl p-1.5 sm:p-2 text-white/50 transition-all hover:bg-white/[0.06] hover:text-white shrink-0"
         >
               <ArrowLeft className="h-5 w-5" />
         </button>
 
             {!isEditingName ? (
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold tracking-tight text-white">
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+                <h1 className="text-base sm:text-xl font-semibold tracking-tight text-white truncate min-w-0">
                   {project?.name || 'Проект'}
                 </h1>
                 {isOwner && (
                   <button
                     onClick={() => setIsEditingName(true)}
-                    className="rounded-lg p-1.5 text-white/30 hover:bg-white/[0.06] hover:text-white/70"
+                    className="rounded-lg p-1 sm:p-1.5 text-white/30 hover:bg-white/[0.06] hover:text-white/70 shrink-0"
                   >
                     <Edit2 className="h-4 w-4" />
                   </button>
                 )}
       </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
                 <Input
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
@@ -1387,7 +1387,7 @@ export default function BoardPage() {
                       setEditedName(project?.name || '');
                     }
                   }}
-                  className="h-9 w-64 border-white/[0.12] bg-white/[0.04] text-white placeholder:text-white/40"
+                  className="h-8 sm:h-9 w-24 sm:w-48 md:w-64 border-white/[0.12] bg-white/[0.04] text-white placeholder:text-white/40 text-sm min-w-0"
                   autoFocus
                 />
                 <button
@@ -1413,14 +1413,14 @@ export default function BoardPage() {
             )}
 
             {project?.is_public && (
-              <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/[0.15] px-3 py-1.5 text-xs font-medium text-emerald-400 ring-1 ring-emerald-500/20">
+              <span className="hidden sm:flex items-center gap-1.5 rounded-full bg-emerald-500/[0.15] px-3 py-1.5 text-xs font-medium text-emerald-400 ring-1 ring-emerald-500/20 shrink-0">
                 <Globe className="h-3 w-3" />
                 Публичный
               </span>
             )}
 
             {!canEdit && (
-              <span className="flex items-center gap-1.5 rounded-full bg-amber-500/[0.15] px-3 py-1.5 text-xs font-medium text-amber-400 ring-1 ring-amber-500/20">
+              <span className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-500/[0.15] px-3 py-1.5 text-xs font-medium text-amber-400 ring-1 ring-amber-500/20 shrink-0">
                 <Lock className="h-3 w-3" />
                 Только просмотр
               </span>
@@ -1428,7 +1428,7 @@ export default function BoardPage() {
           </div>
 
           {/* Правая часть */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <OnlineUsersDropdown
               projectId={projectId}
               members={members}
@@ -1450,22 +1450,22 @@ export default function BoardPage() {
               </Button>
             )}
 
-            {/* Контрол масштабирования */}
-            <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-2 py-1">
+            {/* Контрол масштабирования — компактнее на мобильных */}
+            <div className="flex items-center gap-0.5 sm:gap-2 rounded-lg sm:rounded-xl border border-white/[0.08] bg-white/[0.03] px-1.5 py-0.5 sm:px-2 sm:py-1">
               <button
                 onClick={() => setScale((s) => Math.min(2, s + 0.1))}
-                className="rounded-lg p-1.5 text-white/70 hover:bg-white/[0.08] hover:text-white transition-all"
+                className="rounded p-1 sm:p-1.5 text-white/70 hover:bg-white/[0.08] hover:text-white transition-all touch-manipulation"
               >
-                <ChevronUp className="h-4 w-4" />
+                <ChevronUp className="h-3.5 w-3.5 sm:h-4 w-4" />
               </button>
-              <span className="min-w-[56px] text-center text-sm font-medium text-white/90">
+              <span className="min-w-[36px] sm:min-w-[56px] text-center text-xs sm:text-sm font-medium text-white/90">
                 {Math.round(scale * 100)}%
               </span>
               <button
                 onClick={() => setScale((s) => Math.max(0.3, s - 0.1))}
-                className="rounded-lg p-1.5 text-white/70 hover:bg-white/[0.08] hover:text-white transition-all"
+                className="rounded p-1 sm:p-1.5 text-white/70 hover:bg-white/[0.08] hover:text-white transition-all touch-manipulation"
               >
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-3.5 w-3.5 sm:h-4 w-4" />
               </button>
             </div>
           </div>
@@ -1473,7 +1473,7 @@ export default function BoardPage() {
       </header>
 
       {/* Основная область - Канвас */}
-      <div className="flex-1 overflow-hidden mt-16 relative">
+      <div className="flex-1 overflow-hidden mt-14 sm:mt-16 relative pb-[env(safe-area-inset-bottom)]">
         {/* Панель фильтров */}
         <FiltersPanel
           isOpen={isFilterOpen}
@@ -1503,7 +1503,7 @@ export default function BoardPage() {
 
         <div
           ref={canvasRef}
-          className="relative w-full h-full overflow-hidden"
+          className="relative w-full h-full overflow-hidden touch-pan-x touch-pan-y"
           style={{
             cursor: isPanning ? 'grabbing' : isSpacePressed ? 'grab' : 'default',
             backgroundImage: `
@@ -2000,7 +2000,7 @@ export default function BoardPage() {
                     }
                   }}
                   data-task-id={task.id}
-                  className="glass-card rounded-2xl border backdrop-blur-xl transition-all duration-200 shadow-lg group"
+                  className="glass-card rounded-2xl border backdrop-blur-xl transition-all duration-200 shadow-lg group max-w-[calc(100vw-4rem)]"
             style={{
                     position: 'absolute',
                     left: displayX,
@@ -3147,7 +3147,7 @@ export default function BoardPage() {
       {/* Панель настроек задачи */}
       {selectedTask && settingsPanelPosition && (
         <div
-          className="fixed z-[110] w-80 rounded-xl border border-white/[0.12] bg-zinc-900/98 shadow-2xl backdrop-blur-2xl"
+          className="fixed z-[110] w-80 rounded-xl border border-white/[0.12] bg-zinc-900/98 shadow-2xl backdrop-blur-2xl max-md:!left-4 max-md:!right-4 max-md:!top-20 max-md:!bottom-4 max-md:!w-[auto] max-md:max-h-[calc(100vh-6rem)] max-md:flex max-md:flex-col"
           style={{
             left: `${settingsPanelPosition.x}px`,
             top: `${settingsPanelPosition.y}px`,
@@ -3159,7 +3159,7 @@ export default function BoardPage() {
               <X className="h-3.5 w-3.5" />
             </button>
           </div>
-          <div className="p-3 space-y-3 max-h-[70vh] overflow-y-auto">
+          <div className="p-3 space-y-3 max-h-[70vh] overflow-y-auto max-md:flex-1 max-md:min-h-0 max-md:max-h-none">
             {/* Исполнитель */}
             <div className="pb-3 border-b border-white/[0.06]">
               <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-white/40">

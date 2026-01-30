@@ -229,10 +229,22 @@ export function FiltersPanel({
 
   return (
     <>
-      {/* Панель фильтров - всегда видна */}
+      {/* Бэкдроп на мобильных: затемнение и закрытие по тапу */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          aria-hidden
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggle();
+          }}
+        />
+      )}
+      {/* Панель фильтров */}
       <div
         className={`absolute left-0 top-0 h-full border-r border-white/[0.08] bg-zinc-900/95 backdrop-blur-xl transition-all duration-300 ease-out z-50 overflow-hidden ${
-          isOpen ? 'w-80' : 'w-8'
+          isOpen ? 'w-[min(320px,85vw)] sm:w-72 md:w-80' : 'w-10 sm:w-8'
         }`}
       >
         {/* Кнопка переключения - стрелка вправо в левой части (когда закрыто) */}

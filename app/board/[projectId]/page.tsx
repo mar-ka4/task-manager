@@ -1474,6 +1474,8 @@ export default function BoardPage() {
           filters={filters}
           onFiltersChange={setFilters}
           currentUserId={currentUserId}
+          taskContentItems={taskContentItems}
+          onLoadTaskContent={loadTaskContent}
           onTaskClick={(task) => {
             setSelectedTask(task);
             // Центрируем задачу на канвасе
@@ -3604,6 +3606,14 @@ function TaskContentSection({
     }
   }, [editingContentId]);
 
+  // Авто-высота textarea при вводе
+  useEffect(() => {
+    const ta = contentInputRef.current;
+    if (!ta || editingContentId === null) return;
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(24, ta.scrollHeight) + 'px';
+  }, [editingContentValue, editingContentId]);
+
   if (!isExpanded) {
     return (
       <div className="border-t border-white/[0.08] bg-black/10 px-3 py-2">
@@ -3654,7 +3664,7 @@ function TaskContentSection({
           contentItems
             .sort((a, b) => a.position - b.position)
             .map((item) => (
-              <div key={item.id} className="group flex items-center gap-2 min-h-[28px]">
+              <div key={item.id} className="group relative flex items-start gap-2 min-h-[28px] pr-6">
                 {/* Кружок: серый — не выполнено, зелёный — выполнено */}
                 <button
                   type="button"
@@ -3663,7 +3673,7 @@ function TaskContentSection({
                     if (canEdit) onToggleComplete(item.id, !item.completed);
                   }}
                   disabled={!canEdit}
-                  className={`shrink-0 rounded-full border transition-colors ${
+                  className={`mt-0.5 shrink-0 rounded-full border transition-colors ${
                     item.completed
                       ? 'h-4 w-4 bg-emerald-500 border-emerald-400'
                       : 'h-4 w-4 bg-white/[0.12] border-white/30 hover:bg-white/[0.2]'
@@ -3685,7 +3695,7 @@ function TaskContentSection({
                     }}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className={`flex-1 min-w-0 min-h-[24px] resize-none border-0 bg-transparent px-1 py-0.5 text-xs leading-relaxed text-white placeholder:text-white/30 focus:outline-none ${
+                    className={`flex-1 min-w-0 min-h-[24px] resize-none border-0 bg-transparent px-1 py-0.5 text-xs leading-relaxed text-white/60 placeholder:text-white/30 focus:outline-none overflow-hidden ${
                       item.completed ? 'line-through opacity-60' : ''
                     }`}
                     style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
@@ -3712,14 +3722,14 @@ function TaskContentSection({
                       const target = e.target as HTMLElement;
                       if (target.tagName === 'A') return;
                     }}
-                    className={`flex-1 min-w-0 px-1 py-0.5 text-xs leading-relaxed text-white ${
+                    className={`flex-1 min-w-0 px-1 py-0.5 text-xs leading-relaxed text-white/60 ${
                       item.completed ? 'line-through opacity-60' : ''
                     } ${canEdit ? 'cursor-text' : 'cursor-default opacity-80'}`}
                     style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
                     dangerouslySetInnerHTML={{ __html: item.content ? linkifyText(item.content) : (canEdit ? '<span class="text-white/30">Добавить текст...</span>' : '&nbsp;') }}
                   />
                 )}
-                {/* Удаление — по hover */}
+                {/* Удаление — absolute вверху справа, не занимает место */}
                 {canEdit && (
                   <button
                     type="button"
@@ -3727,7 +3737,7 @@ function TaskContentSection({
                       e.stopPropagation();
                       onDeleteItem(item.id);
                     }}
-                    className="shrink-0 p-0.5 rounded opacity-0 group-hover:opacity-100 text-white/40 hover:text-red-400 transition-all"
+                    className="absolute right-0 top-0 p-0.5 rounded opacity-0 group-hover:opacity-100 text-white/40 hover:text-red-400 transition-all z-10"
                     title="Удалить пункт"
                   >
                     <X className="h-3.5 w-3.5" />

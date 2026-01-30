@@ -2717,18 +2717,17 @@ export default function BoardPage() {
                         ref={(el) => {
                           if (el && document.activeElement !== el) {
                             const currentText = (el.innerText || el.textContent || '').trim();
-                            // Получаем текст из localTitle (без HTML тегов)
                             const taskText = task.title || '';
                             const shouldShowPlaceholder = !taskText || taskText === 'New Task' || taskText === 'Новая задача';
-                            
-                            // Если задача пустая, показываем placeholder
-                            if (shouldShowPlaceholder) {
+                            // Показываем placeholder только когда поле реально пустое — иначе при первом вводе (task.title ещё не обновился) затирали бы только что введённый текст
+                            const isEmptyOrPlaceholder = !currentText || currentText === 'Название задачи...' || currentText === 'New Task' || currentText === 'Новая задача';
+                            if (shouldShowPlaceholder && isEmptyOrPlaceholder) {
                               if (currentText !== 'Название задачи...') {
                                 el.innerHTML = '';
                                 el.innerText = 'Название задачи...';
                                 el.style.color = 'rgba(255, 255, 255, 0.35)';
                               }
-                            } else {
+                            } else if (!shouldShowPlaceholder) {
                               // Если есть текст, показываем его
                               const newText = localTitle ? (() => {
                                 const temp = document.createElement('div');
@@ -2837,18 +2836,17 @@ export default function BoardPage() {
                         onBlur={(e) => {
                           const html = e.currentTarget.innerHTML;
                           const text = (e.currentTarget.innerText || e.currentTarget.textContent || '').trim();
-                          // Если пусто или это дефолтные значения, показываем placeholder и сохраняем пустой title
+                          // Сразу синхронизируем state с DOM, чтобы ref не затирал при первом вводе
+                          setTaskTitles((prev) => ({ ...prev, [task.id]: html }));
                           if (!text || text === 'New Task' || text === 'Новая задача' || text === 'Название задачи...') {
                             e.currentTarget.innerHTML = '';
                             e.currentTarget.innerText = 'Название задачи...';
                             e.currentTarget.style.color = 'rgba(255, 255, 255, 0.35)';
-                            // Сохраняем пустой title
                             if (task.title && task.title !== 'New Task' && task.title !== 'Новая задача') {
                               handleUpdateTask(task.id, { title: '' });
                             }
                           } else {
                             e.currentTarget.style.color = 'rgba(255, 255, 255, 1)';
-                            // Сохраняем только текст без HTML тегов в базу данных
                             if (text !== task.title && text !== 'New Task' && text !== 'Новая задача') {
                               handleUpdateTask(task.id, { title: text });
                             }

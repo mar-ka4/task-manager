@@ -2852,7 +2852,7 @@ export default function BoardPage() {
                   {/* Изображения и файлы задачи */}
                   {(((taskImages[task.id] && taskImages[task.id].length > 0) || (task.images && task.images.length > 0)) ||
                     ((taskFiles[task.id] && taskFiles[task.id].length > 0) || (task.files && task.files.length > 0))) && (
-                    <div className="bg-black/10 px-3 pt-0 pb-3">
+                    <div className="px-3 pt-0 pb-3">
                       <div className="flex flex-wrap gap-2">
                         {/* Изображения */}
                         {((taskImages[task.id] && taskImages[task.id].length > 0) ? taskImages[task.id] : (task.images || [])).map((image, index) => {
@@ -3616,7 +3616,7 @@ function TaskContentSection({
 
   if (!isExpanded) {
     return (
-      <div className="border-t border-white/[0.08] bg-black/10 px-3 py-2">
+      <div className="border-t border-white/[0.08] px-3 py-2">
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -3635,7 +3635,7 @@ function TaskContentSection({
   }
 
   return (
-    <div className="border-t border-white/[0.08] bg-black/10 p-3 space-y-2">
+    <div className="border-t border-white/[0.08] p-3 space-y-2">
       {/* Заголовок секции — весь ряд кликабелен для сворачивания, z-20 поверх зоны настроек */}
       <button
         type="button"
@@ -3797,7 +3797,7 @@ function TaskDescriptionSection({
 
   if (!isExpanded) {
     return (
-      <div className="border-t border-white/[0.08] bg-black/10 px-3 py-2 relative z-20">
+      <div className="border-t border-white/[0.08] px-3 py-2 relative z-20">
         <button
           data-description-toggle
           onClick={(e) => {
@@ -3823,7 +3823,7 @@ function TaskDescriptionSection({
   }
 
   return (
-    <div className="border-t border-white/[0.08] bg-black/10 p-3 space-y-2 relative z-20">
+    <div className="border-t border-white/[0.08] p-3 space-y-2 relative z-20">
       {/* Заголовок секции */}
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-semibold uppercase tracking-wider text-white/50 flex items-center gap-2">

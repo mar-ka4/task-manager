@@ -264,7 +264,7 @@ export function FiltersPanel({
         )}
         {/* Контент панели - виден только когда открыто */}
         {isOpen && (
-          <div className="h-full flex flex-col overflow-hidden p-6">
+          <div className="h-full flex flex-col overflow-hidden p-4">
             {/* Переключатель режимов */}
             <div className="flex-shrink-0 mb-6 flex gap-2 rounded-lg bg-white/[0.05] p-1">
               <button
@@ -469,18 +469,18 @@ export function FiltersPanel({
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                      className="appearance-none bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-1.5 pr-8 text-sm text-white/70 hover:text-white hover:bg-white/[0.08] transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      className="filters-panel-select appearance-none w-full rounded-lg border border-white/[0.12] bg-zinc-800/90 px-3 py-1.5 pr-8 text-sm text-white/90 hover:bg-zinc-700/90 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/20 cursor-pointer transition-colors"
                     >
-                      <option value="none" className="bg-zinc-900 text-white">Все</option>
-                      <option value="not_completed" className="bg-zinc-900 text-white">Не выполненные</option>
-                      <option value="in_progress" className="bg-zinc-900 text-white">В работе</option>
-                      <option value="deadline" className="bg-zinc-900 text-white">По дедлайну</option>
+                      <option value="none">Все</option>
+                      <option value="not_completed">Не выполненные</option>
+                      <option value="in_progress">В работе</option>
+                      <option value="deadline">По дедлайну</option>
                     </select>
                     <ArrowUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/50 pointer-events-none" />
                   </div>
                 </div>
                 {/* Список задач — скролл только здесь, тонкий скроллбар */}
-                <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin-ios pr-1">
+                <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin-ios pl-3 pt-2 pr-1">
                   {myTasks.length === 0 ? (
                     <div className="text-center py-8 text-white/40 text-sm">
                       У вас нет назначенных задач
@@ -593,7 +593,7 @@ export function FiltersPanel({
 
                             {/* Пункты без заголовка «Содержимое»: 3 шт + раскрытие вниз */}
                             {contentItems.length > 0 && (
-                              <div className="mb-2 space-y-0.5">
+                              <div className="space-y-0.5">
                                 {visibleContentItems.map((item) => (
                                   <div key={item.id} className="flex items-start gap-2 text-xs text-white/60">
                                     <span className={`shrink-0 mt-0.5 h-2.5 w-2.5 rounded-full border ${

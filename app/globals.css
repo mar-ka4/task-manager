@@ -88,6 +88,12 @@
   background: rgba(255, 255, 255, 0.25);
 }
 
+/* Выпадающий список в панели «Мои задачи» — тёмная тема */
+.filters-panel-select option {
+  background: rgb(39 39 42);
+  color: rgb(255 255 255);
+}
+
 /* Скрытие подчеркивания ошибок орфографии, когда поле не в фокусе */
 [contenteditable]:not(.spellcheck-active)::spelling-error,
 [contenteditable]:not(.spellcheck-active) *::spelling-error,

@@ -568,14 +568,22 @@ export default function BoardPage() {
   // Обработка Ctrl + колесо мыши для масштабирования
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      if (e.ctrlKey && canvasRef.current?.contains(e.target as Node)) {
+      if (!canvasRef.current?.contains(e.target as Node)) return;
+      if (e.ctrlKey) {
         e.preventDefault();
         const delta = e.deltaY > 0 ? -0.1 : 0.1;
         setScale((prev) => Math.max(0.3, Math.min(2, prev + delta)));
-      } else if (!e.ctrlKey && isSpacePressed && canvasRef.current?.contains(e.target as Node)) {
+      } else if (isSpacePressed) {
         e.preventDefault();
         setOffset((prev) => ({
           x: prev.x - e.deltaX,
+          y: prev.y - e.deltaY,
+        }));
+      } else {
+        // Обычный скролл колёсиком — сдвиг рабочей области вверх/вниз
+        e.preventDefault();
+        setOffset((prev) => ({
+          x: prev.x,
           y: prev.y - e.deltaY,
         }));
       }

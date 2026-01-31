@@ -535,7 +535,7 @@ export function FiltersPanel({
                           <div
                             key={task.id}
                             onClick={() => onTaskClick?.(task)}
-                            className={`relative rounded-lg border ${getBorderColor()} bg-muted/30 p-3 pr-9 cursor-pointer transition-all hover:bg-muted ${
+                            className={`relative rounded-lg border ${getBorderColor()} bg-muted/30 p-3 cursor-pointer transition-all hover:bg-muted ${
                               task.marker_type === 'urgent' 
                                 ? 'hover:border-red-500/60' 
                                 : task.marker_type === 'warning'
@@ -663,7 +663,7 @@ export function FiltersPanel({
 
                             {/* Изображения и файлы */}
                             {((task.images && task.images.length > 0) || (task.files && task.files.length > 0)) && (
-                              <div className="mb-2">
+                              <div>
                                 <div className="flex flex-wrap gap-1.5">
                                   {task.images && task.images.length > 0 && task.images.map((image, index) => {
                                     const imageSrc = normalizeImageSrc(image);

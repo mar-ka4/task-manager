@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Toaster } from "sonner";
+import Script from "next/script";
 import "./globals.css";
+import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
   title: "Task Manager",
@@ -21,10 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
       <body className="min-h-screen touch-manipulation">
-        {children}
-        <Toaster position="top-center" theme="light" className="max-sm:left-4 max-sm:right-4 max-sm:top-16" />
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('task-manager-theme');if(t==='dark')document.documentElement.classList.add('dark');})();`,
+          }}
+        />
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

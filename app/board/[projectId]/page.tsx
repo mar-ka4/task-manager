@@ -73,6 +73,7 @@ import { getTasks, createTask, updateTask, deleteTask, getProject, getProjectMem
 import { Task, Project, ProjectMember, TaskContentItem, TaskConnection } from '@/lib/types';
 import { subscribeToProject, unsubscribeFromProject } from '@/lib/websocket';
 import { ArrowLeft, Settings, ChevronUp, ChevronDown, Globe, Lock, Users, Edit2, Check, X, Filter, Trash2, Plus, User, Bold, Italic, Calendar, List, Paperclip, AlertCircle, AlertTriangle, Clock } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FiltersPanel } from '@/components/board/FiltersPanel';
@@ -1314,7 +1315,7 @@ export default function BoardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50 dark:from-neutral-950 dark:via-zinc-950 dark:to-neutral-900">
         <div className="text-center">
           <p className="text-foreground text-lg">Загрузка...</p>
         </div>
@@ -1324,7 +1325,7 @@ export default function BoardPage() {
 
   if (error) {
   return (
-      <div className="min-h-screen bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50 dark:from-neutral-950 dark:via-zinc-950 dark:to-neutral-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 text-lg mb-4">Ошибка: {error}</p>
           <button
@@ -1343,7 +1344,7 @@ export default function BoardPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50 dark:from-neutral-950 dark:via-zinc-950 dark:to-neutral-900">
       {/* Верхняя панель (Header) */}
       <header className="fixed top-0 left-0 right-0 h-14 sm:h-16 z-50 border-b border-border bg-background/95 backdrop-blur-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3.5 safe-area-inset-top">
         <div className="flex items-center justify-between h-full gap-2 min-w-0">
@@ -2497,7 +2498,7 @@ export default function BoardPage() {
                           className="h-6 border-0 bg-transparent p-0 text-xs text-foreground/80 focus:outline-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                           style={{ 
                             fontSize: '12px',
-                            color: 'rgba(255, 255, 255, 0.8)',
+                            color: 'hsl(var(--foreground) / 0.8)',
                           }}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -2648,13 +2649,13 @@ export default function BoardPage() {
                           setTaskTitles((prev) => ({ ...prev, [task.id]: html }));
                           // Обновляем цвет при вводе
                           if (text.trim()) {
-                            e.currentTarget.style.color = 'rgba(255, 255, 255, 1)';
+                            e.currentTarget.style.color = 'hsl(var(--foreground))';
                           }
                         }}
                         data-placeholder="Название задачи..."
                         className="min-h-[20px] resize-none border-0 bg-transparent p-0 text-sm font-normal leading-relaxed text-foreground focus-visible:ring-0 w-full outline-none"
                         style={{
-                          color: localTitle ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.35)',
+                          color: localTitle ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
                           cursor: 'text',
                         }}
                         onFocus={(e) => {
@@ -2666,7 +2667,7 @@ export default function BoardPage() {
                           // Если это placeholder текст, пусто, или "New Task", очищаем
                           if (text === 'Название задачи...' || text === 'New Task' || text === 'Новая задача' || !text) {
                             e.currentTarget.innerHTML = '';
-                            e.currentTarget.style.color = 'rgba(255, 255, 255, 1)';
+                            e.currentTarget.style.color = 'hsl(var(--foreground))';
                             // Устанавливаем курсор в начало
                             const element = e.currentTarget;
                             setTimeout(() => {
@@ -2733,7 +2734,7 @@ export default function BoardPage() {
                               if (currentText !== 'Название задачи...') {
                                 el.innerHTML = '';
                                 el.innerText = 'Название задачи...';
-                                el.style.color = 'rgba(255, 255, 255, 0.35)';
+                                el.style.color = 'hsl(var(--muted-foreground))';
                               }
                             } else if (!shouldShowPlaceholder) {
                               // Если есть текст, показываем его
@@ -2745,7 +2746,7 @@ export default function BoardPage() {
                               
                               if (newText && currentText !== newText && currentText !== 'Название задачи...') {
                                 el.innerHTML = localTitle || taskText;
-                                el.style.color = 'rgba(255, 255, 255, 1)';
+                                el.style.color = 'hsl(var(--foreground))';
                               }
                             }
                           }
@@ -2849,12 +2850,12 @@ export default function BoardPage() {
                           if (!text || text === 'New Task' || text === 'Новая задача' || text === 'Название задачи...') {
                             e.currentTarget.innerHTML = '';
                             e.currentTarget.innerText = 'Название задачи...';
-                            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.35)';
+                            e.currentTarget.style.color = 'hsl(var(--muted-foreground))';
                             if (task.title && task.title !== 'New Task' && task.title !== 'Новая задача') {
                               handleUpdateTask(task.id, { title: '' });
                             }
                           } else {
-                            e.currentTarget.style.color = 'rgba(255, 255, 255, 1)';
+                            e.currentTarget.style.color = 'hsl(var(--foreground))';
                             if (text !== task.title && text !== 'New Task' && text !== 'Новая задача') {
                               handleUpdateTask(task.id, { title: text });
                             }

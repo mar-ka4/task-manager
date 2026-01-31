@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { Key } from 'lucide-react';
 import { UserProfileMenu } from '@/components/user-profile-menu';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function ProjectsPage() {
   const router = useRouter();
@@ -95,8 +96,9 @@ export default function ProjectsPage() {
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-white">Проекты</h1>
+          <h1 className="text-3xl font-bold text-foreground">Проекты</h1>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <Button
               variant="outline"
               onClick={handleJoinByCode}

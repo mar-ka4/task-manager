@@ -70,7 +70,7 @@
   }
   
   .glass-card {
-    @apply backdrop-blur-xl bg-white/80 border border-border;
+    @apply backdrop-blur-xl bg-white/80 border border-border dark:bg-zinc-900/95 dark:border-border;
   }
 }
 

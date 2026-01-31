@@ -125,7 +125,7 @@ export function ProjectSettingsDialog({ project, open, onOpenChange, onProjectUp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-white/[0.12] bg-zinc-900/98 backdrop-blur-2xl sm:max-w-[440px]">
+      <DialogContent className="sm:max-w-[440px]">
         <DialogHeader>
           <DialogTitle>Настройки проекта</DialogTitle>
           <DialogDescription>
@@ -137,7 +137,7 @@ export function ProjectSettingsDialog({ project, open, onOpenChange, onProjectUp
           <div className="space-y-4">
           {/* Название проекта */}
           <div>
-            <label className="block text-sm font-medium mb-1.5 text-white/70">
+            <label className="block text-sm font-medium mb-1.5 text-muted-foreground">
               Название проекта
             </label>
             <Input
@@ -145,12 +145,12 @@ export function ProjectSettingsDialog({ project, open, onOpenChange, onProjectUp
               onChange={(e) => setName(e.target.value)}
               placeholder="Название проекта"
               disabled={!isOwner}
-              className="bg-white/[0.05] border-white/[0.12] text-white"
+              className="bg-muted/50 border-border text-foreground"
             />
           </div>
 
           {/* Публичность проекта */}
-          <div className="flex items-center justify-between rounded-xl border border-white/[0.12] bg-white/[0.04] p-4">
+          <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 p-4">
             <div className="flex items-center gap-3">
               {isPublic ? (
                 <Globe className="h-5 w-5 text-emerald-400" />
@@ -158,10 +158,10 @@ export function ProjectSettingsDialog({ project, open, onOpenChange, onProjectUp
                 <Lock className="h-5 w-5 text-amber-400" />
               )}
               <div>
-                <p className="text-sm font-medium text-white">
+                <p className="text-sm font-medium text-foreground">
                   {isPublic ? 'Публичный проект' : 'Приватный проект'}
                 </p>
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-muted-foreground">
                   {isPublic
                     ? 'Проект виден всем пользователям'
                     : 'Проект виден только участникам'}
@@ -179,7 +179,7 @@ export function ProjectSettingsDialog({ project, open, onOpenChange, onProjectUp
           {isPublic && isOwner && (
             <div className="rounded-xl border border-blue-500/[0.25] bg-blue-500/[0.08] p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-white">Код доступа</p>
+                <p className="text-sm font-medium text-foreground">Код доступа</p>
                 {accessCode ? (
                   <Button
                     variant="ghost"
@@ -209,7 +209,7 @@ export function ProjectSettingsDialog({ project, open, onOpenChange, onProjectUp
                     {accessCode.split('').map((char, index) => (
                       <span
                         key={index}
-                        className="text-xl font-bold tracking-wider text-white"
+                        className="text-xl font-bold tracking-wider text-foreground"
                       >
                         {char}
                       </span>
@@ -233,12 +233,12 @@ export function ProjectSettingsDialog({ project, open, onOpenChange, onProjectUp
                       </>
                     )}
                   </Button>
-                  <p className="text-xs text-white/50 text-center">
+                  <p className="text-xs text-muted-foreground text-center">
                     Поделитесь этим кодом, чтобы пригласить других пользователей в проект
                   </p>
                 </div>
               ) : (
-                <p className="text-xs text-white/50 text-center">
+                <p className="text-xs text-muted-foreground text-center">
                   Сгенерируйте код доступа, чтобы другие пользователи могли присоединиться к проекту
                 </p>
               )}
@@ -262,7 +262,7 @@ export function ProjectSettingsDialog({ project, open, onOpenChange, onProjectUp
           )}
           </div>
         ) : (
-          <div className="py-8 text-center text-white/60">
+          <div className="py-8 text-center text-muted-foreground">
             Загрузка настроек проекта...
           </div>
         )}

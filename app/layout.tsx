@@ -21,10 +21,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className="dark">
+    <html lang="ru">
       <body className="min-h-screen touch-manipulation">
         {children}
-        <Toaster position="top-center" theme="dark" className="max-sm:left-4 max-sm:right-4 max-sm:top-16" />
+        <Toaster position="top-center" theme="light" className="max-sm:left-4 max-sm:right-4 max-sm:top-16" />
       </body>
     </html>
   );

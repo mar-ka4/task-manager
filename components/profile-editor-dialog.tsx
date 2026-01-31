@@ -122,7 +122,7 @@ export function ProfileEditorDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-white/[0.12] bg-zinc-900/98 backdrop-blur-2xl sm:max-w-[440px]">
+      <DialogContent className="sm:max-w-[440px]">
         <DialogHeader>
           <DialogTitle>Редактировать профиль</DialogTitle>
           <DialogDescription>
@@ -132,7 +132,7 @@ export function ProfileEditorDialog({
 
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
           </div>
         ) : (
           <div className="space-y-4">
@@ -158,7 +158,7 @@ export function ProfileEditorDialog({
                 {/* Предпросмотр аватара */}
                 <div className="relative">
                   <div
-                    className="h-20 w-20 rounded-full flex items-center justify-center text-2xl font-bold text-white overflow-hidden ring-2 ring-white/20"
+                    className="h-20 w-20 rounded-full flex items-center justify-center text-2xl font-bold text-foreground overflow-hidden ring-2 ring-border"
                     style={{ backgroundColor: avatarColor }}
                   >
                     {avatarImage ? (

@@ -86,7 +86,7 @@ export default function ProjectsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
       </div>
     );
   }
@@ -118,7 +118,7 @@ export default function ProjectsPage() {
         {/* Мои проекты */}
         {myProjects.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-white mb-4">Мои проекты</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">Мои проекты</h2>
             <ProjectsGrid
               projects={myProjects}
               onCreateProject={() => setShowCreateModal(true)}
@@ -129,7 +129,7 @@ export default function ProjectsPage() {
         {/* Проекты, где я участник */}
         {sharedProjects.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-white mb-4">Проекты, где я участник</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">Проекты, где я участник</h2>
             <ProjectsGrid
               projects={sharedProjects}
               onCreateProject={() => setShowCreateModal(true)}
@@ -155,7 +155,7 @@ export default function ProjectsPage() {
             </DialogHeader>
             <form onSubmit={handleCreateProject} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1 text-white/70">
+                <label className="block text-sm font-medium mb-1 text-muted-foreground">
                   Название проекта
                 </label>
                 <Input
@@ -173,7 +173,7 @@ export default function ProjectsPage() {
                   checked={isPublic}
                   onCheckedChange={setIsPublic}
                 />
-                <label htmlFor="public" className="text-sm text-white/70 cursor-pointer">
+                <label htmlFor="public" className="text-sm text-muted-foreground cursor-pointer">
                   Публичный проект
                 </label>
               </div>

@@ -83,7 +83,7 @@ export function UserProfileMenu({ onProfileUpdate }: UserProfileMenuProps) {
 
   if (loading) {
     return (
-      <div className="h-8 w-8 rounded-full bg-white/10 animate-pulse" />
+      <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
     );
   }
 
@@ -98,7 +98,7 @@ export function UserProfileMenu({ onProfileUpdate }: UserProfileMenuProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-full overflow-hidden ring-2 ring-white/20 hover:ring-white/40 transition-all"
+            className="h-10 w-10 rounded-full overflow-hidden ring-2 ring-border hover:ring-ring transition-all"
             style={{ backgroundColor: profile.avatar_color }}
           >
             {profile.avatar_image ? (
@@ -114,11 +114,11 @@ export function UserProfileMenu({ onProfileUpdate }: UserProfileMenuProps) {
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-64 border-white/10 bg-slate-900/95 backdrop-blur-xl">
+        <DropdownMenuContent className="w-64">
           <div className="px-3 py-2">
             <div className="flex items-center gap-3">
               <div
-                className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold text-white overflow-hidden ring-2 ring-white/20"
+                className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold text-white overflow-hidden ring-2 ring-border"
                 style={{ backgroundColor: profile.avatar_color }}
               >
                 {profile.avatar_image ? (
@@ -135,13 +135,13 @@ export function UserProfileMenu({ onProfileUpdate }: UserProfileMenuProps) {
                 <p className="text-sm font-medium text-white truncate">
                   {profile.display_name}
                 </p>
-                <p className="text-xs text-white/60 truncate">
+                <p className="text-xs text-muted-foreground truncate">
                   {user.email}
                 </p>
               </div>
             </div>
           </div>
-          <DropdownMenuSeparator className="bg-white/10" />
+          <DropdownMenuSeparator className="bg-border" />
           <DropdownMenuItem
             onClick={() => setShowProfileDialog(true)}
             className="flex items-center gap-2"
@@ -149,7 +149,7 @@ export function UserProfileMenu({ onProfileUpdate }: UserProfileMenuProps) {
             <Edit className="h-4 w-4" />
             Редактировать профиль
           </DropdownMenuItem>
-          <DropdownMenuSeparator className="bg-white/10" />
+          <DropdownMenuSeparator className="bg-border" />
           <DropdownMenuItem
             onClick={handleLogout}
             className="flex items-center gap-2 text-red-400 hover:text-red-300 focus:text-red-300"

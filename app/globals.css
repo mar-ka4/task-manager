@@ -54,7 +54,7 @@
     border-color: hsl(var(--border));
   }
   body {
-    @apply bg-gradient-to-br from-neutral-950 via-zinc-950 to-neutral-900 text-white;
+    @apply bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50 text-foreground;
     font-family: 'Geist', 'Geist Fallback', sans-serif;
   }
 }
@@ -70,14 +70,14 @@
   }
   
   .glass-card {
-    @apply backdrop-blur-xl bg-white/5 border border-white/10;
+    @apply backdrop-blur-xl bg-white/80 border border-border;
   }
 }
 
 /* Тонкий скроллбар (почти как на iOS) — для списка «Мои задачи» */
 .scrollbar-thin-ios {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.4) transparent;
 }
 .scrollbar-thin-ios::-webkit-scrollbar {
   width: 5px;
@@ -86,17 +86,17 @@
   background: transparent;
 }
 .scrollbar-thin-ios::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 3px;
 }
 .scrollbar-thin-ios::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: hsl(var(--muted-foreground) / 0.5);
 }
 
-/* Выпадающий список в панели «Мои задачи» — тёмная тема */
+/* Выпадающий список в панели «Мои задачи» — светлая тема */
 .filters-panel-select option {
-  background: rgb(39 39 42);
-  color: rgb(255 255 255);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 /* Скрытие подчеркивания ошибок орфографии, когда поле не в фокусе */

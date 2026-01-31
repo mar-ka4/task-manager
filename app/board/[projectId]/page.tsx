@@ -1314,9 +1314,9 @@ export default function BoardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-neutral-950 via-zinc-950 to-neutral-900">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50">
         <div className="text-center">
-          <p className="text-white text-lg">Загрузка...</p>
+          <p className="text-foreground text-lg">Загрузка...</p>
         </div>
       </div>
     );
@@ -1324,7 +1324,7 @@ export default function BoardPage() {
 
   if (error) {
   return (
-      <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-zinc-950 to-neutral-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 text-lg mb-4">Ошибка: {error}</p>
           <button
@@ -1343,28 +1343,28 @@ export default function BoardPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-neutral-950 via-zinc-950 to-neutral-900">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50">
       {/* Верхняя панель (Header) */}
-      <header className="fixed top-0 left-0 right-0 h-14 sm:h-16 z-50 border-b border-white/[0.08] bg-zinc-950/60 backdrop-blur-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3.5 safe-area-inset-top">
+      <header className="fixed top-0 left-0 right-0 h-14 sm:h-16 z-50 border-b border-border bg-background/95 backdrop-blur-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3.5 safe-area-inset-top">
         <div className="flex items-center justify-between h-full gap-2 min-w-0">
           {/* Левая часть */}
           <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
         <button
           onClick={() => router.push('/projects')}
-              className="rounded-xl p-1.5 sm:p-2 text-white/50 transition-all hover:bg-white/[0.06] hover:text-white shrink-0"
+              className="rounded-xl p-1.5 sm:p-2 text-muted-foreground transition-all hover:bg-muted hover:text-foreground shrink-0"
         >
               <ArrowLeft className="h-5 w-5" />
         </button>
 
             {!isEditingName ? (
               <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
-                <h1 className="text-base sm:text-xl font-semibold tracking-tight text-white truncate min-w-0">
+                <h1 className="text-base sm:text-xl font-semibold tracking-tight text-foreground truncate min-w-0">
                   {project?.name || 'Проект'}
                 </h1>
                 {isOwner && (
                   <button
                     onClick={() => setIsEditingName(true)}
-                    className="rounded-lg p-1 sm:p-1.5 text-white/30 hover:bg-white/[0.06] hover:text-white/70 shrink-0"
+                    className="rounded-lg p-1 sm:p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground/80 shrink-0"
                   >
                     <Edit2 className="h-4 w-4" />
                   </button>
@@ -1395,7 +1395,7 @@ export default function BoardPage() {
                       setEditedName(project?.name || '');
                     }
                   }}
-                  className="h-8 sm:h-9 w-24 sm:w-48 md:w-64 border-white/[0.12] bg-white/[0.04] text-white placeholder:text-white/40 text-sm min-w-0"
+                  className="h-8 sm:h-9 w-24 sm:w-48 md:w-64 border-border bg-muted/50 text-foreground placeholder:text-muted-foreground text-sm min-w-0"
                   autoFocus
                 />
                 <button
@@ -1451,7 +1451,7 @@ export default function BoardPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 hover:bg-white/[0.06]"
+                className="h-8 w-8 hover:bg-muted"
                 onClick={() => setShowSettingsDialog(true)}
               >
                 <Settings className="h-4 w-4" />
@@ -1459,19 +1459,19 @@ export default function BoardPage() {
             )}
 
             {/* Контрол масштабирования — компактнее на мобильных */}
-            <div className="flex items-center gap-0.5 sm:gap-2 rounded-lg sm:rounded-xl border border-white/[0.08] bg-white/[0.03] px-1.5 py-0.5 sm:px-2 sm:py-1">
+            <div className="flex items-center gap-0.5 sm:gap-2 rounded-lg sm:rounded-xl border border-border bg-muted/30 px-1.5 py-0.5 sm:px-2 sm:py-1">
               <button
                 onClick={() => setScale((s) => Math.min(2, s + 0.1))}
-                className="rounded p-1 sm:p-1.5 text-white/70 hover:bg-white/[0.08] hover:text-white transition-all touch-manipulation"
+                className="rounded p-1 sm:p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all touch-manipulation"
               >
                 <ChevronUp className="h-3.5 w-3.5 sm:h-4 w-4" />
               </button>
-              <span className="min-w-[36px] sm:min-w-[56px] text-center text-xs sm:text-sm font-medium text-white/90">
+              <span className="min-w-[36px] sm:min-w-[56px] text-center text-xs sm:text-sm font-medium text-foreground/90">
                 {Math.round(scale * 100)}%
               </span>
               <button
                 onClick={() => setScale((s) => Math.max(0.3, s - 0.1))}
-                className="rounded p-1 sm:p-1.5 text-white/70 hover:bg-white/[0.08] hover:text-white transition-all touch-manipulation"
+                className="rounded p-1 sm:p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all touch-manipulation"
               >
                 <ChevronDown className="h-3.5 w-3.5 sm:h-4 w-4" />
               </button>
@@ -1515,8 +1515,8 @@ export default function BoardPage() {
           style={{
             cursor: isPanning ? 'grabbing' : isSpacePressed ? 'grab' : 'default',
             backgroundImage: `
-              linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px)
+              linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px)
             `,
             backgroundSize: `${GRID_SIZE * scale}px ${GRID_SIZE * scale}px`,
             backgroundPosition: `${offset.x}px ${offset.y}px`,
@@ -2020,7 +2020,7 @@ export default function BoardPage() {
                     borderWidth: '1px', // Всегда тонкая обводка
                     boxShadow: isSelected
                       ? 'none'
-                      : `0 4px 16px rgba(0, 0, 0, 0.4)`,
+                      : '0 4px 16px rgba(0, 0, 0, 0.08)',
                     background: `linear-gradient(135deg, rgba(${taskColor.join(',')}, ${isSelected ? 0.22 : 0.18}) 0%, rgba(${taskColor.join(',')}, ${isSelected ? 0.16 : 0.12}) 100%)`,
                     zIndex: isSelected || isDragging ? 30 : 10,
                     opacity: isFiltered ? 0.25 : 1,
@@ -2237,17 +2237,17 @@ export default function BoardPage() {
                     <div className="absolute -top-1.5 -left-1.5 z-40">
                       {task.marker_type === 'urgent' && (
                         <div className="bg-red-500 rounded-full p-0.5 shadow-lg ring-2 ring-red-500/30">
-                          <AlertCircle className="h-4 w-4 text-white" strokeWidth={2.5} />
+                          <AlertCircle className="h-4 w-4 text-foreground" strokeWidth={2.5} />
                         </div>
                       )}
                       {task.marker_type === 'warning' && (
                         <div className="bg-yellow-500 rounded-full p-0.5 shadow-lg ring-2 ring-yellow-500/30">
-                          <AlertTriangle className="h-4 w-4 text-white" strokeWidth={2} />
+                          <AlertTriangle className="h-4 w-4 text-foreground" strokeWidth={2} />
                         </div>
                       )}
                       {task.marker_type === 'time' && (
                         <div className="bg-blue-500 rounded-full p-0.5 shadow-lg ring-2 ring-blue-500/30">
-                          <Clock className="h-4 w-4 text-white" strokeWidth={2} />
+                          <Clock className="h-4 w-4 text-foreground" strokeWidth={2} />
                         </div>
                       )}
                     </div>
@@ -2279,7 +2279,7 @@ export default function BoardPage() {
                   {hoveredTask === task.id && canEdit && !isFiltered && (
                     <div
                       data-format-menu
-                      className="absolute z-50 w-full flex items-center gap-1 rounded-lg border border-white/[0.12] bg-zinc-900/95 px-1 py-1 pr-2.5 shadow-xl backdrop-blur-xl"
+                      className="absolute z-50 w-full flex items-center gap-1 rounded-lg border border-border bg-card px-1 py-1 pr-2.5 shadow-xl backdrop-blur-xl"
                       style={{ left: 0, bottom: '100%', marginBottom: '5px' }}
                       onMouseEnter={() => {
                         // Очищаем таймер при наведении на меню
@@ -2323,7 +2323,7 @@ export default function BoardPage() {
                             setTaskTitles((prev) => ({ ...prev, [task.id]: html }));
                           }
                         }}
-                        className="flex h-7 w-7 items-center justify-center rounded text-white/70 transition-all hover:bg-white/[0.1] hover:text-white"
+                        className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
                         title="Жирный (Bold)"
                       >
                         <Bold className="h-3.5 w-3.5" />
@@ -2341,7 +2341,7 @@ export default function BoardPage() {
                             setTaskTitles((prev) => ({ ...prev, [task.id]: html }));
                           }
                         }}
-                        className="flex h-7 w-7 items-center justify-center rounded text-white/70 transition-all hover:bg-white/[0.1] hover:text-white"
+                        className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
                         title="Курсив (Italic)"
                       >
                         <Italic className="h-3.5 w-3.5" />
@@ -2356,7 +2356,7 @@ export default function BoardPage() {
                             fileInput.click();
                           }
                         }}
-                        className="flex h-7 w-7 items-center justify-center rounded text-white/70 transition-all hover:bg-white/[0.1] hover:text-white"
+                        className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
                         title="Прикрепить файл"
                       >
                         <Paperclip className="h-3.5 w-3.5" />
@@ -2411,7 +2411,7 @@ export default function BoardPage() {
                             e.stopPropagation();
                             handleUpdateTask(task.id, { status: 'todo' });
                           }}
-                          className="h-[15px] w-[15px] rounded-full bg-gray-400 transition-all hover:scale-110 hover:ring-2 hover:ring-white/30"
+                          className="h-[15px] w-[15px] rounded-full bg-gray-400 transition-all hover:scale-110 hover:ring-2 hover:ring-ring"
                           title="К выполнению"
                         />
                         <button
@@ -2420,7 +2420,7 @@ export default function BoardPage() {
                             e.stopPropagation();
                             handleUpdateTask(task.id, { status: 'in_progress' });
                           }}
-                          className="h-[15px] w-[15px] rounded-full bg-amber-500 transition-all hover:scale-110 hover:ring-2 hover:ring-white/30"
+                          className="h-[15px] w-[15px] rounded-full bg-amber-500 transition-all hover:scale-110 hover:ring-2 hover:ring-ring"
                           title="В работе"
                         />
                         <button
@@ -2429,7 +2429,7 @@ export default function BoardPage() {
                             e.stopPropagation();
                             handleUpdateTask(task.id, { status: 'completed' });
                           }}
-                          className="h-[15px] w-[15px] rounded-full bg-green-500 transition-all hover:scale-110 hover:ring-2 hover:ring-white/30"
+                          className="h-[15px] w-[15px] rounded-full bg-green-500 transition-all hover:scale-110 hover:ring-2 hover:ring-ring"
                           title="Завершено"
                         />
                       </div>
@@ -2439,7 +2439,7 @@ export default function BoardPage() {
                   {hoveredTask === task.id && !isFiltered && (
                     <div
                       data-info-menu
-                      className="absolute z-50 w-full flex items-center justify-between gap-2 rounded-lg border border-white/[0.12] bg-zinc-900/95 px-2 py-1.5 shadow-xl backdrop-blur-xl"
+                      className="absolute z-50 w-full flex items-center justify-between gap-2 rounded-lg border border-border bg-card px-2 py-1.5 shadow-xl backdrop-blur-xl"
                       style={{ left: 0, top: '100%', marginTop: '5px' }}
                       onMouseEnter={() => {
                         // Очищаем таймер при наведении на меню
@@ -2484,7 +2484,7 @@ export default function BoardPage() {
                           }}
                           className="flex items-center justify-center"
                         >
-                          <Calendar className="h-3.5 w-3.5 text-white/70" />
+                          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
                         </button>
                         <input
                           type="date"
@@ -2494,7 +2494,7 @@ export default function BoardPage() {
                             const newDate = e.target.value ? new Date(e.target.value).toISOString() : null;
                             handleUpdateTask(task.id, { deadline: newDate });
                           }}
-                          className="h-6 border-0 bg-transparent p-0 text-xs text-white/80 focus:outline-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                          className="h-6 border-0 bg-transparent p-0 text-xs text-foreground/80 focus:outline-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                           style={{ 
                             fontSize: '12px',
                             color: 'rgba(255, 255, 255, 0.8)',
@@ -2522,7 +2522,7 @@ export default function BoardPage() {
                             e.stopPropagation();
                             setOpenAssigneeMenu(openAssigneeMenu === task.id ? null : task.id);
                           }}
-                          className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm overflow-hidden ring-1 ring-white/20 transition-all hover:scale-110"
+                          className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold text-foreground shadow-sm overflow-hidden ring-1 ring-border transition-all hover:scale-110"
                           style={{ 
                             backgroundColor: assignee?.avatar_color || '#6b7280',
                           }}
@@ -2542,7 +2542,7 @@ export default function BoardPage() {
                         {openAssigneeMenu === task.id && (
                           <div
                             data-assignee-menu
-                            className="absolute bottom-full right-0 mb-0.5 z-50 min-w-[180px] rounded-lg border border-white/[0.12] bg-zinc-900/95 p-1.5 shadow-xl backdrop-blur-xl"
+                            className="absolute bottom-full right-0 mb-0.5 z-50 min-w-[180px] rounded-lg border border-border bg-card p-1.5 shadow-xl backdrop-blur-xl"
                             onMouseEnter={(e) => {
                               e.stopPropagation();
                               setOpenAssigneeMenu(task.id);
@@ -2585,11 +2585,11 @@ export default function BoardPage() {
                                 }}
                                 className={`w-full flex items-center gap-2 rounded px-2 py-1.5 text-xs transition-all ${
                                   !task.assignee_id
-                                    ? 'bg-white/[0.1] text-white'
-                                    : 'text-white/70 hover:bg-white/[0.08] hover:text-white'
+                                    ? 'bg-muted text-foreground'
+                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                                 }`}
                               >
-                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[9px] font-bold text-white/40 ring-1 ring-white/10">
+                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[9px] font-bold text-muted-foreground ring-1 ring-border">
                                   ?
                                 </div>
                                 <span>Не назначен</span>
@@ -2609,12 +2609,12 @@ export default function BoardPage() {
                                   }}
                                   className={`w-full flex items-center gap-2 rounded px-2 py-1.5 text-xs transition-all ${
                                     task.assignee_id === member.user_id
-                                      ? 'bg-white/[0.1] text-white'
-                                      : 'text-white/70 hover:bg-white/[0.08] hover:text-white'
+                                      ? 'bg-muted text-foreground'
+                                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                                   }`}
                                 >
                                   <div
-                                    className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white shadow-sm overflow-hidden ring-1 ring-white/20"
+                                    className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-foreground shadow-sm overflow-hidden ring-1 ring-border"
                                     style={{ backgroundColor: member.avatar_color || '#6b7280' }}
                                   >
                                     {member.avatar_image ? (
@@ -2652,7 +2652,7 @@ export default function BoardPage() {
                           }
                         }}
                         data-placeholder="Название задачи..."
-                        className="min-h-[20px] resize-none border-0 bg-transparent p-0 text-sm font-normal leading-relaxed text-white focus-visible:ring-0 w-full outline-none"
+                        className="min-h-[20px] resize-none border-0 bg-transparent p-0 text-sm font-normal leading-relaxed text-foreground focus-visible:ring-0 w-full outline-none"
                         style={{
                           color: localTitle ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.35)',
                           cursor: 'text',
@@ -2878,7 +2878,7 @@ export default function BoardPage() {
                           return (
                             <div
                               key={`img-${index}`}
-                              className="group relative aspect-square w-[50px] rounded-lg overflow-hidden bg-white/[0.06] border border-white/[0.08] cursor-pointer"
+                              className="group relative aspect-square w-[50px] rounded-lg overflow-hidden bg-muted border border-border cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedImage(imageSrc);
@@ -2896,7 +2896,7 @@ export default function BoardPage() {
                                   if (parent) {
                                     target.style.display = 'none';
                                     const placeholder = document.createElement('div');
-                                    placeholder.className = 'flex items-center justify-center h-full w-full text-white/40 text-[8px]';
+                                    placeholder.className = 'flex items-center justify-center h-full w-full text-muted-foreground text-[8px]';
                                     placeholder.textContent = 'Ошибка';
                                     parent.appendChild(placeholder);
                                   }
@@ -2929,14 +2929,14 @@ export default function BoardPage() {
                         {(taskFiles[task.id] || task.files || []).map((file, index) => (
                           <div
                             key={`file-${index}`}
-                            className="group relative flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.08] hover:bg-white/[0.1] transition-colors"
+                            className="group relative flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-muted border border-border hover:bg-muted transition-colors"
                           >
-                            <Paperclip className="h-3 w-3 text-white/60" />
+                            <Paperclip className="h-3 w-3 text-muted-foreground" />
                             <a
                               href={file.data}
                               download={file.name}
                               onClick={(e) => e.stopPropagation()}
-                              className="text-xs text-white/80 hover:text-white truncate max-w-[100px]"
+                              className="text-xs text-foreground/80 hover:text-foreground truncate max-w-[100px]"
                               title={file.name}
                             >
                               {file.name}
@@ -3153,22 +3153,22 @@ export default function BoardPage() {
       {/* Панель настроек задачи */}
       {selectedTask && settingsPanelPosition && (
         <div
-          className="fixed z-[110] w-80 rounded-xl border border-white/[0.12] bg-zinc-900/98 shadow-2xl backdrop-blur-2xl max-md:!left-4 max-md:!right-4 max-md:!top-20 max-md:!bottom-4 max-md:!w-[auto] max-md:max-h-[calc(100vh-6rem)] max-md:flex max-md:flex-col"
+          className="fixed z-[110] w-80 rounded-xl border border-border bg-card shadow-2xl backdrop-blur-2xl max-md:!left-4 max-md:!right-4 max-md:!top-20 max-md:!bottom-4 max-md:!w-[auto] max-md:max-h-[calc(100vh-6rem)] max-md:flex max-md:flex-col"
           style={{
             left: `${settingsPanelPosition.x}px`,
             top: `${settingsPanelPosition.y}px`,
           }}
         >
-          <div className="flex items-center justify-between border-b border-white/[0.08] p-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-white/60">Настройки</h3>
-            <button onClick={() => setSelectedTask(null)} className="text-white/60 hover:text-white">
+          <div className="flex items-center justify-between border-b border-border p-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Настройки</h3>
+            <button onClick={() => setSelectedTask(null)} className="text-muted-foreground hover:text-foreground">
               <X className="h-3.5 w-3.5" />
             </button>
           </div>
           <div className="p-3 space-y-3 max-h-[70vh] overflow-y-auto max-md:flex-1 max-md:min-h-0 max-md:max-h-none">
             {/* Исполнитель */}
-            <div className="pb-3 border-b border-white/[0.06]">
-              <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-white/40">
+            <div className="pb-3 border-b border-border/60">
+              <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Исполнитель
               </label>
               <div className="relative">
@@ -3178,7 +3178,7 @@ export default function BoardPage() {
                     e.stopPropagation();
                     setOpenAssigneeMenu(openAssigneeMenu === selectedTask.id ? null : selectedTask.id);
                   }}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm overflow-hidden ring-1 ring-white/20 transition-all hover:scale-110"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-bold text-foreground shadow-sm overflow-hidden ring-1 ring-border transition-all hover:scale-110"
                   style={{ 
                     backgroundColor: (() => {
                       const assignee = members.find((m) => m.user_id === selectedTask.assignee_id);
@@ -3208,7 +3208,7 @@ export default function BoardPage() {
                 {openAssigneeMenu === selectedTask.id && (
                   <div
                     data-assignee-menu
-                    className="absolute top-full left-0 mt-1 z-50 min-w-[180px] rounded-lg border border-white/[0.12] bg-zinc-900/95 p-1.5 shadow-xl backdrop-blur-xl"
+                    className="absolute top-full left-0 mt-1 z-50 min-w-[180px] rounded-lg border border-border bg-card p-1.5 shadow-xl backdrop-blur-xl"
                     onMouseEnter={(e) => {
                       e.stopPropagation();
                       setOpenAssigneeMenu(selectedTask.id);
@@ -3247,11 +3247,11 @@ export default function BoardPage() {
                         }}
                         className={`w-full flex items-center gap-2 rounded px-2 py-1.5 text-xs transition-all ${
                           !selectedTask.assignee_id
-                            ? 'bg-white/[0.1] text-white'
-                            : 'text-white/70 hover:bg-white/[0.08] hover:text-white'
+                            ? 'bg-muted text-foreground'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                         }`}
                       >
-                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[9px] font-bold text-white/40 ring-1 ring-white/10">
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[9px] font-bold text-muted-foreground ring-1 ring-border">
                           ?
                         </div>
                         <span>Не назначен</span>
@@ -3271,12 +3271,12 @@ export default function BoardPage() {
                           }}
                           className={`w-full flex items-center gap-2 rounded px-2 py-1.5 text-xs transition-all ${
                             selectedTask.assignee_id === member.user_id
-                              ? 'bg-white/[0.1] text-white'
-                              : 'text-white/70 hover:bg-white/[0.08] hover:text-white'
+                              ? 'bg-muted text-foreground'
+                              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                           }`}
                         >
                           <div
-                            className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white shadow-sm overflow-hidden ring-1 ring-white/20"
+                            className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-foreground shadow-sm overflow-hidden ring-1 ring-border"
                             style={{ backgroundColor: member.avatar_color || '#6b7280' }}
                           >
                             {member.avatar_image ? (
@@ -3299,8 +3299,8 @@ export default function BoardPage() {
             </div>
 
             {/* Пометка задачи */}
-            <div className="pb-3 border-b border-white/[0.06]">
-              <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-white/40">
+            <div className="pb-3 border-b border-border/60">
+              <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Пометка
               </label>
               <div className="flex flex-wrap gap-2">
@@ -3310,11 +3310,11 @@ export default function BoardPage() {
                     handleUpdateTask(selectedTask.id, { marker_type: selectedTask.marker_type === 'urgent' ? null : 'urgent' });
                   }}
                   className={`flex items-center justify-center h-8 w-8 rounded-lg border-2 transition-all hover:scale-110 ${
-                    selectedTask.marker_type === 'urgent' ? 'border-red-500 ring-2 ring-red-500/30 bg-red-500/20' : 'border-white/20'
+                    selectedTask.marker_type === 'urgent' ? 'border-red-500 ring-2 ring-red-500/30 bg-red-500/20' : 'border-border'
                   }`}
                   title="Срочно"
                 >
-                  <AlertCircle className={`h-4 w-4 ${selectedTask.marker_type === 'urgent' ? 'text-red-500' : 'text-white/40'}`} strokeWidth={3} />
+                  <AlertCircle className={`h-4 w-4 ${selectedTask.marker_type === 'urgent' ? 'text-red-500' : 'text-muted-foreground'}`} strokeWidth={3} />
                 </button>
                 <button
                   onClick={(e) => {
@@ -3322,11 +3322,11 @@ export default function BoardPage() {
                     handleUpdateTask(selectedTask.id, { marker_type: selectedTask.marker_type === 'warning' ? null : 'warning' });
                   }}
                   className={`flex items-center justify-center h-8 w-8 rounded-lg border-2 transition-all hover:scale-110 ${
-                    selectedTask.marker_type === 'warning' ? 'border-yellow-500 ring-2 ring-yellow-500/30 bg-yellow-500/20' : 'border-white/20'
+                    selectedTask.marker_type === 'warning' ? 'border-yellow-500 ring-2 ring-yellow-500/30 bg-yellow-500/20' : 'border-border'
                   }`}
                   title="Внимание"
                 >
-                  <AlertTriangle className={`h-4 w-4 ${selectedTask.marker_type === 'warning' ? 'text-yellow-500' : 'text-white/40'}`} strokeWidth={2.5} />
+                  <AlertTriangle className={`h-4 w-4 ${selectedTask.marker_type === 'warning' ? 'text-yellow-500' : 'text-muted-foreground'}`} strokeWidth={2.5} />
                 </button>
                 <button
                   onClick={(e) => {
@@ -3334,18 +3334,18 @@ export default function BoardPage() {
                     handleUpdateTask(selectedTask.id, { marker_type: selectedTask.marker_type === 'time' ? null : 'time' });
                   }}
                   className={`flex items-center justify-center h-8 w-8 rounded-lg border-2 transition-all hover:scale-110 ${
-                    selectedTask.marker_type === 'time' ? 'border-blue-500 ring-2 ring-blue-500/30 bg-blue-500/20' : 'border-white/20'
+                    selectedTask.marker_type === 'time' ? 'border-blue-500 ring-2 ring-blue-500/30 bg-blue-500/20' : 'border-border'
                   }`}
                   title="Тайминг"
                 >
-                  <Clock className={`h-4 w-4 ${selectedTask.marker_type === 'time' ? 'text-blue-500' : 'text-white/40'}`} strokeWidth={2} />
+                  <Clock className={`h-4 w-4 ${selectedTask.marker_type === 'time' ? 'text-blue-500' : 'text-muted-foreground'}`} strokeWidth={2} />
                 </button>
               </div>
             </div>
 
             {/* Цвет задачи */}
-            <div className="pb-3 border-b border-white/[0.06]">
-              <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-white/40">
+            <div className="pb-3 border-b border-border/60">
+              <label className="mb-2 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Цвет
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -3376,7 +3376,7 @@ export default function BoardPage() {
                         handleUpdateTask(selectedTask.id, { color: colorOption.color });
                       }}
                       className={`h-5 w-5 rounded-md border-2 transition-all hover:scale-110 ${
-                        isSelected ? 'border-white ring-2 ring-white/30' : 'border-white/20'
+                        isSelected ? 'border-border ring-2 ring-ring' : 'border-border'
                       }`}
                       style={{ backgroundColor: `rgb(${colorOption.color})` }}
                       title={colorOption.name}
@@ -3387,19 +3387,19 @@ export default function BoardPage() {
             </div>
 
             {/* Даты */}
-            <div className="grid grid-cols-2 gap-2 pb-3 border-b border-white/[0.06]">
+            <div className="grid grid-cols-2 gap-2 pb-3 border-b border-border/60">
               <div>
-                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                   Создано
                 </label>
-                <div className="text-xs text-white/60">
+                <div className="text-xs text-muted-foreground">
                   {selectedTask.created_at
                     ? new Date(selectedTask.created_at).toLocaleDateString('ru-RU')
                     : '—'}
                 </div>
               </div>
               <div>
-                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                   Дедлайн
                 </label>
                 <input
@@ -3409,7 +3409,7 @@ export default function BoardPage() {
                     const newDate = e.target.value ? new Date(e.target.value).toISOString() : null;
                     handleUpdateTask(selectedTask.id, { deadline: newDate });
                   }}
-                  className="w-full h-7 border border-white/[0.12] bg-white/[0.05] rounded px-2 text-xs text-white/80 focus:outline-none focus:ring-1 focus:ring-white/20"
+                  className="w-full h-7 border border-border bg-muted/50 rounded px-2 text-xs text-foreground/80 focus:outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
             </div>
@@ -3442,7 +3442,7 @@ export default function BoardPage() {
       {/* Контекстное меню */}
       {contextMenu.type && (
         <div
-          className="fixed z-[100] min-w-[220px] rounded-xl border border-white/[0.12] bg-zinc-900/98 p-1.5 shadow-2xl backdrop-blur-2xl"
+          className="fixed z-[100] min-w-[220px] rounded-xl border border-border bg-card p-1.5 shadow-2xl backdrop-blur-2xl"
           style={{
             left: `${contextMenu.x}px`,
             top: `${contextMenu.y}px`,
@@ -3463,7 +3463,7 @@ export default function BoardPage() {
                   e.stopPropagation();
                   handleCreateTaskFromContext(e.clientX, e.clientY, false);
                 }}
-                className="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-white transition-all hover:bg-white/[0.08]"
+                className="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-foreground transition-all hover:bg-muted"
               >
                 Создать задачу
               </button>
@@ -3472,7 +3472,7 @@ export default function BoardPage() {
                   e.stopPropagation();
                   handleCreateTaskFromContext(e.clientX, e.clientY, true);
                 }}
-                className="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-white transition-all hover:bg-white/[0.08]"
+                className="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-foreground transition-all hover:bg-muted"
               >
                 Создать задачу с содержимым
               </button>
@@ -3494,7 +3494,7 @@ export default function BoardPage() {
                     await handleCreateTask(snappedX, snappedY, task.id);
                     setContextMenu({ x: 0, y: 0, type: null, taskId: undefined });
                   }}
-                  className="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-white transition-all hover:bg-white/[0.08]"
+                  className="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-foreground transition-all hover:bg-muted"
                 >
                   Создать связанную задачу
                 </button>
@@ -3515,7 +3515,7 @@ export default function BoardPage() {
                     }
                     setContextMenu({ x: 0, y: 0, type: null, taskId: undefined });
                   }}
-                  className="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-white transition-all hover:bg-white/[0.08]"
+                  className="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-foreground transition-all hover:bg-muted"
                 >
                   Добавить содержимое
                 </button>
@@ -3536,7 +3536,7 @@ export default function BoardPage() {
                     }
                     setContextMenu({ x: 0, y: 0, type: null, taskId: undefined });
                   }}
-                  className="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-white transition-all hover:bg-white/[0.08]"
+                  className="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-foreground transition-all hover:bg-muted"
                 >
                   {task?.description ? 'Редактировать описание' : 'Добавить описание'}
                 </button>
@@ -3562,7 +3562,7 @@ export default function BoardPage() {
       {/* Модальное окно для просмотра изображения */}
       {selectedImage && (
         <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm"
           onClick={() => setSelectedImage(null)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
@@ -3583,7 +3583,7 @@ export default function BoardPage() {
                 e.stopPropagation();
                 setSelectedImage(null);
               }}
-              className="absolute -top-3 -right-3 rounded-full p-2.5 bg-red-500/90 hover:bg-red-500 text-white transition-all shadow-lg z-10 border-2 border-white/20"
+              className="absolute -top-3 -right-3 rounded-full p-2.5 bg-red-500/90 hover:bg-red-500 text-white transition-all shadow-lg z-10 border-2 border-border"
               title="Закрыть (Esc)"
             >
               <X className="h-5 w-5" />
@@ -3642,13 +3642,13 @@ function TaskContentSection({
 
   if (!isExpanded) {
     return (
-      <div className="border-t border-white/[0.08] px-3 py-2">
+      <div className="border-t border-border px-3 py-2">
         <button
           onClick={(e) => {
             e.stopPropagation();
             onToggleExpand();
           }}
-          className="flex w-full items-center justify-between text-xs font-semibold text-white/50 hover:text-white/70 transition-colors"
+          className="flex w-full items-center justify-between text-xs font-semibold text-muted-foreground hover:text-muted-foreground transition-colors"
         >
           <span className="uppercase tracking-wider flex items-center gap-2">
             <List className="h-3.5 w-3.5" />
@@ -3661,7 +3661,7 @@ function TaskContentSection({
   }
 
   return (
-    <div className="border-t border-white/[0.08] p-3 space-y-2">
+    <div className="border-t border-border p-3 space-y-2">
       {/* Заголовок секции — весь ряд кликабелен для сворачивания, z-20 поверх зоны настроек */}
       <div className="flex w-full items-center justify-between mb-2 relative z-20 gap-1">
         <button
@@ -3674,11 +3674,11 @@ function TaskContentSection({
           onMouseDown={(e) => e.stopPropagation()}
           className="flex-1 flex items-center justify-between text-left min-w-0"
         >
-          <span className="text-xs font-semibold uppercase tracking-wider text-white/50 flex items-center gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
             <List className="h-3.5 w-3.5" />
             Содержимое
           </span>
-          <ChevronUp className="h-3.5 w-3.5 text-white/40 hover:text-white/70 transition-colors shrink-0" />
+          <ChevronUp className="h-3.5 w-3.5 text-muted-foreground hover:text-muted-foreground transition-colors shrink-0" />
         </button>
         {canEdit && contentItems.length > 0 && (
           <button
@@ -3687,7 +3687,7 @@ function TaskContentSection({
               e.stopPropagation();
               if (confirm('Удалить всё содержимое задачи?')) onRemoveAllContent();
             }}
-            className="p-1 rounded text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+            className="p-1 rounded text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
             title="Удалить содержимое"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -3698,7 +3698,7 @@ function TaskContentSection({
       {/* Список: круг слева (серый/зелёный), текст справа */}
       <div className="space-y-1 max-h-[320px] overflow-y-auto pr-1">
         {contentItems.length === 0 ? (
-          <div className="text-center py-3 text-xs text-white/40">
+          <div className="text-center py-3 text-xs text-muted-foreground">
             Нет элементов. Добавьте первый пункт.
           </div>
         ) : (
@@ -3717,7 +3717,7 @@ function TaskContentSection({
                   className={`mt-0.5 shrink-0 rounded-full border transition-colors ${
                     item.completed
                       ? 'h-4 w-4 bg-emerald-500 border-emerald-400'
-                      : 'h-4 w-4 bg-white/[0.12] border-white/30 hover:bg-white/[0.2]'
+                      : 'h-4 w-4 bg-muted border-border hover:bg-muted'
                   } ${!canEdit ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                   title={item.completed ? 'Отметить невыполненным' : 'Выполнено'}
                 />
@@ -3736,7 +3736,7 @@ function TaskContentSection({
                     }}
                     onClick={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
-                    className={`flex-1 min-w-0 min-h-[24px] resize-none border-0 bg-transparent px-1 py-0.5 text-xs leading-relaxed text-white/60 placeholder:text-white/30 focus:outline-none overflow-hidden ${
+                    className={`flex-1 min-w-0 min-h-[24px] resize-none border-0 bg-transparent px-1 py-0.5 text-xs leading-relaxed text-muted-foreground placeholder:text-muted-foreground focus:outline-none overflow-hidden ${
                       item.completed ? 'line-through opacity-60' : ''
                     }`}
                     style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
@@ -3763,11 +3763,11 @@ function TaskContentSection({
                       const target = e.target as HTMLElement;
                       if (target.tagName === 'A') return;
                     }}
-                    className={`flex-1 min-w-0 px-1 py-0.5 text-xs leading-relaxed text-white/60 ${
+                    className={`flex-1 min-w-0 px-1 py-0.5 text-xs leading-relaxed text-muted-foreground ${
                       item.completed ? 'line-through opacity-60' : ''
                     } ${canEdit ? 'cursor-text' : 'cursor-default opacity-80'}`}
                     style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
-                    dangerouslySetInnerHTML={{ __html: item.content ? linkifyText(item.content) : (canEdit ? '<span class="text-white/30">Добавить текст...</span>' : '&nbsp;') }}
+                    dangerouslySetInnerHTML={{ __html: item.content ? linkifyText(item.content) : (canEdit ? '<span class="text-muted-foreground">Добавить текст...</span>' : '&nbsp;') }}
                   />
                 )}
                 {/* Удаление — absolute вверху справа; z-20 чтобы поверх зоны настроек справа */}
@@ -3784,7 +3784,7 @@ function TaskContentSection({
                       e.preventDefault();
                     }}
                     data-content-item-delete
-                    className="absolute right-0 top-0 p-0.5 rounded opacity-0 group-hover:opacity-100 text-white/40 hover:text-red-400 transition-all z-20 pointer-events-auto"
+                    className="absolute right-0 top-0 p-0.5 rounded opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-400 transition-all z-20 pointer-events-auto"
                     title="Удалить пункт"
                   >
                     <X className="h-3.5 w-3.5" />
@@ -3802,7 +3802,7 @@ function TaskContentSection({
             e.stopPropagation();
             onAddItem();
           }}
-          className="w-full mt-1.5 flex items-center justify-center gap-1.5 py-1.5 text-xs text-white/50 hover:text-white/70 hover:bg-white/[0.06] rounded transition-colors"
+          className="w-full mt-1.5 flex items-center justify-center gap-1.5 py-1.5 text-xs text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
           Добавить пункт
@@ -3846,7 +3846,7 @@ function TaskDescriptionSection({
 
   if (!isExpanded) {
     return (
-      <div className="border-t border-white/[0.08] px-3 py-2 relative z-20">
+      <div className="border-t border-border px-3 py-2 relative z-20">
         <button
           data-description-toggle
           onClick={(e) => {
@@ -3858,7 +3858,7 @@ function TaskDescriptionSection({
             e.stopPropagation();
             e.preventDefault();
           }}
-          className="flex w-full items-center justify-between text-xs font-semibold text-white/50 hover:text-white/70 transition-colors relative z-30"
+          className="flex w-full items-center justify-between text-xs font-semibold text-muted-foreground hover:text-muted-foreground transition-colors relative z-30"
           style={{ pointerEvents: 'auto' }}
         >
           <span className="uppercase tracking-wider flex items-center gap-2">
@@ -3872,7 +3872,7 @@ function TaskDescriptionSection({
   }
 
   return (
-    <div className="border-t border-white/[0.08] p-3 space-y-2 relative z-20">
+    <div className="border-t border-border p-3 space-y-2 relative z-20">
       {/* Заголовок секции */}
       <div className="flex items-center justify-between mb-2 gap-1">
         <button
@@ -3889,11 +3889,11 @@ function TaskDescriptionSection({
           className="flex-1 flex items-center justify-between text-left min-w-0"
           style={{ pointerEvents: 'auto' }}
         >
-          <span className="text-xs font-semibold uppercase tracking-wider text-white/50 flex items-center gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
             <Edit2 className="h-3.5 w-3.5" />
             Описание
           </span>
-          <ChevronUp className="h-3.5 w-3.5 text-white/40 hover:text-white/70 transition-colors shrink-0" />
+          <ChevronUp className="h-3.5 w-3.5 text-muted-foreground hover:text-muted-foreground transition-colors shrink-0" />
         </button>
         {canEdit && task.description && onClearDescription && (
           <button
@@ -3903,7 +3903,7 @@ function TaskDescriptionSection({
               e.preventDefault();
               if (confirm('Удалить описание задачи?')) onClearDescription();
             }}
-            className="p-1 rounded text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0 relative z-30"
+            className="p-1 rounded text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0 relative z-30"
             title="Удалить описание"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -3925,7 +3925,7 @@ function TaskDescriptionSection({
           }}
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
-          className="w-full min-h-[60px] resize-none border-0 bg-transparent px-0 py-0 text-xs leading-relaxed text-white/60 placeholder:text-white/30 focus:outline-none focus:ring-0"
+          className="w-full min-h-[60px] resize-none border-0 bg-transparent px-0 py-0 text-xs leading-relaxed text-muted-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-0"
           style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
           placeholder="Введите описание задачи..."
           rows={4}
@@ -3949,12 +3949,12 @@ function TaskDescriptionSection({
             const target = e.target as HTMLElement;
             if (target.tagName === 'A') return;
           }}
-          className={`w-full min-h-[60px] text-xs leading-relaxed text-white/60 focus:outline-none ${
+          className={`w-full min-h-[60px] text-xs leading-relaxed text-muted-foreground focus:outline-none ${
             canEdit ? 'cursor-text' : 'cursor-default opacity-50'
           }`}
           style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
           dangerouslySetInnerHTML={{
-            __html: localDescription ? linkifyText(localDescription) : (canEdit ? '<span class="text-white/30">Введите описание задачи...</span>' : '<span class="text-white/30">Нет описания</span>'),
+            __html: localDescription ? linkifyText(localDescription) : (canEdit ? '<span class="text-muted-foreground">Введите описание задачи...</span>' : '<span class="text-muted-foreground">Нет описания</span>'),
           }}
         />
       )}

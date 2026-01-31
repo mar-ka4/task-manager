@@ -57,14 +57,14 @@ export function OnlineUsersDropdown({
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5">
+        <Button className="flex items-center gap-2 rounded-xl border border-border bg-muted/50 px-3 py-1.5">
           {members.length > 0 && (
             <>
               <div className="flex -space-x-2">
                 {visibleMembers.map((member) => (
                   <div
                     key={member.user_id || member.id}
-                    className="relative h-6 w-6 rounded-full ring-2 ring-slate-900 overflow-hidden"
+                    className="relative h-6 w-6 rounded-full ring-2 ring-background overflow-hidden"
                     style={{ backgroundColor: member.avatar_color || '#6b7280' }}
                   >
                     {member.avatar_image ? (
@@ -74,7 +74,7 @@ export function OnlineUsersDropdown({
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-[10px] font-bold text-white">
+                      <div className="flex h-full w-full items-center justify-center text-[10px] font-bold text-foreground">
                         {member.display_name?.[0]?.toUpperCase() || '?'}
                       </div>
                     )}
@@ -84,13 +84,13 @@ export function OnlineUsersDropdown({
                 ))}
               </div>
               {remainingCount > 0 && (
-                <span className="text-xs text-white/60">+{remainingCount}</span>
+                <span className="text-xs text-muted-foreground">+{remainingCount}</span>
               )}
             </>
           )}
-          <Users className="h-4 w-4 text-white/60" />
+          <Users className="h-4 w-4 text-muted-foreground" />
           {members.length > 0 && (
-            <span className="text-xs text-white/40">({members.length})</span>
+            <span className="text-xs text-muted-foreground">({members.length})</span>
           )}
         </Button>
       </DropdownMenuTrigger>
@@ -98,10 +98,10 @@ export function OnlineUsersDropdown({
         <div className="px-2 py-2">
           <p className="text-xs font-semibold text-white/60">Участники проекта</p>
         </div>
-        <DropdownMenuSeparator className="bg-white/10" />
+        <DropdownMenuSeparator className="bg-border" />
         <div className="max-h-64 overflow-y-auto">
           {members.length === 0 ? (
-            <div className="px-3 py-4 text-center text-sm text-white/40">
+            <div className="px-3 py-4 text-center text-sm text-muted-foreground">
               Нет участников
             </div>
           ) : (
@@ -116,7 +116,7 @@ export function OnlineUsersDropdown({
                 >
                 <div className="relative">
                   <div
-                    className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden"
+                    className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-foreground overflow-hidden"
                     style={{ backgroundColor: member.avatar_color || '#6b7280' }}
                   >
                     {member.avatar_image ? (
@@ -134,11 +134,11 @@ export function OnlineUsersDropdown({
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className={isOnline ? 'text-white' : 'text-white/40'}>
+                  <p className={isOnline ? 'text-foreground' : 'text-muted-foreground'}>
                     {member.display_name || 'Без имени'}
                     {isCurrentUser && ' (Вы)'}
                   </p>
-                  <p className="text-xs text-white/40">
+                  <p className="text-xs text-muted-foreground">
                     {member.role === 'owner'
                       ? 'Владелец'
                       : member.role === 'editor'
@@ -152,7 +152,7 @@ export function OnlineUsersDropdown({
                       e.stopPropagation();
                       handleRemoveMember(member.id, member.display_name || 'Участник');
                     }}
-                    className="rounded-lg p-1 text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                    className="rounded-lg p-1 text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -164,7 +164,7 @@ export function OnlineUsersDropdown({
         </div>
         {isOwner && (
           <>
-            <DropdownMenuSeparator className="bg-white/10" />
+            <DropdownMenuSeparator className="bg-border" />
             <DropdownMenuItem
               onClick={handleCopyInviteLink}
               className="flex items-center gap-2"

@@ -243,7 +243,7 @@ export function FiltersPanel({
       )}
       {/* Панель фильтров */}
       <div
-        className={`absolute left-0 top-0 h-full border-r border-white/[0.08] bg-zinc-900/95 backdrop-blur-xl transition-all duration-300 ease-out z-50 overflow-hidden ${
+        className={`absolute left-0 top-0 h-full border-r border-border bg-card backdrop-blur-xl transition-all duration-300 ease-out z-50 overflow-hidden ${
           isOpen ? 'w-[min(320px,85vw)] sm:w-72 md:w-80' : 'w-10 sm:w-8'
         }`}
       >
@@ -255,7 +255,7 @@ export function FiltersPanel({
               e.stopPropagation();
               onToggle();
             }}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-[60] flex h-6 w-6 items-center justify-center text-white/70 hover:text-white cursor-pointer pointer-events-auto"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-[60] flex h-6 w-6 items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer pointer-events-auto"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -269,7 +269,7 @@ export function FiltersPanel({
               e.stopPropagation();
               onToggle();
             }}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-[60] flex h-6 w-6 items-center justify-center text-white/70 hover:text-white cursor-pointer pointer-events-auto"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-[60] flex h-6 w-6 items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer pointer-events-auto"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -278,13 +278,13 @@ export function FiltersPanel({
         {isOpen && (
           <div className="h-full flex flex-col overflow-hidden p-4">
             {/* Переключатель режимов */}
-            <div className="flex-shrink-0 mb-6 flex gap-2 rounded-lg bg-white/[0.05] p-1">
+            <div className="flex-shrink-0 mb-6 flex gap-2 rounded-lg bg-muted/30 p-1">
               <button
                 onClick={() => setViewMode('all')}
                 className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
                   viewMode === 'all'
-                    ? 'bg-white/[0.1] text-white'
-                    : 'text-white/60 hover:text-white/80'
+                    ? 'bg-muted text-foreground'
+                    : 'text-muted-foreground hover:text-foreground/80'
                 }`}
               >
                 Все задачи
@@ -293,8 +293,8 @@ export function FiltersPanel({
                 onClick={() => setViewMode('my')}
                 className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
                   viewMode === 'my'
-                    ? 'bg-white/[0.1] text-white'
-                    : 'text-white/60 hover:text-white/80'
+                    ? 'bg-muted text-foreground'
+                    : 'text-muted-foreground hover:text-foreground/80'
                 }`}
               >
                 Мои задачи
@@ -306,7 +306,7 @@ export function FiltersPanel({
               <>
                 {/* Заголовок */}
                 <div className="mb-6 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-white">Фильтры</h2>
+                  <h2 className="text-lg font-semibold text-foreground">Фильтры</h2>
                   {hasActiveFilters && (
                     <button
                       onClick={clearFilters}
@@ -319,7 +319,7 @@ export function FiltersPanel({
 
             {/* Фильтр по исполнителям */}
             <div className="mb-6">
-              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-white/60">
+              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <User className="h-4 w-4" />
                 <span>Исполнители</span>
               </div>
@@ -334,12 +334,12 @@ export function FiltersPanel({
                       className={`w-full rounded-lg border p-3 text-left transition-all ${
                         isSelected
                           ? 'border-blue-500/50 bg-blue-500/10'
-                          : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06]'
+                          : 'border-border bg-muted/30 hover:bg-muted'
                       }`}
                     >
                       <div className="mb-2 flex items-center gap-2">
                         <div
-                          className="h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden"
+                          className="h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold text-foreground overflow-hidden"
                           style={{ backgroundColor: member.avatar_color || '#6b7280' }}
                         >
                           {member.avatar_image ? (
@@ -352,13 +352,13 @@ export function FiltersPanel({
                             <span>{member.display_name?.[0]?.toUpperCase() || '?'}</span>
                           )}
                         </div>
-                        <span className="text-sm font-medium text-white">{member.display_name || 'Без имени'}</span>
+                        <span className="text-sm font-medium text-foreground">{member.display_name || 'Без имени'}</span>
                       </div>
-                      <div className="flex items-center gap-3 text-xs text-white/50">
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         <span>Всего: {stats.total}</span>
                         <span className="text-emerald-400">✓ {stats.done}</span>
                         <span className="text-blue-400">⟳ {stats.inProgress}</span>
-                        <span className="text-white/40">○ {stats.todo}</span>
+                        <span className="text-muted-foreground">○ {stats.todo}</span>
                       </div>
                     </button>
                   );
@@ -368,7 +368,7 @@ export function FiltersPanel({
 
             {/* Фильтр по статусам */}
             <div className="mb-6">
-              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-white/60">
+              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4" />
                 <span>Статус</span>
               </div>
@@ -379,12 +379,12 @@ export function FiltersPanel({
                   className={`flex w-full items-center gap-3 rounded-lg border p-3 transition-all ${
                     filters.statuses.includes('todo')
                       ? 'border-gray-500/50 bg-gray-500/10'
-                      : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06]'
+                      : 'border-border bg-muted/30 hover:bg-muted'
                   }`}
                 >
                   <Circle className="h-4 w-4 text-gray-400" />
-                  <span className="text-sm font-medium text-white">Не начато</span>
-                  <span className="ml-auto text-xs text-white/50">{getStatusCount('todo')}</span>
+                  <span className="text-sm font-medium text-foreground">Не начато</span>
+                  <span className="ml-auto text-xs text-muted-foreground">{getStatusCount('todo')}</span>
                 </button>
 
                 {/* В работе */}
@@ -393,12 +393,12 @@ export function FiltersPanel({
                   className={`flex w-full items-center gap-3 rounded-lg border p-3 transition-all ${
                     filters.statuses.includes('in_progress')
                       ? 'border-blue-500/50 bg-blue-500/10'
-                      : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06]'
+                      : 'border-border bg-muted/30 hover:bg-muted'
                   }`}
                 >
                   <PlayCircle className="h-4 w-4 text-blue-400" />
-                  <span className="text-sm font-medium text-white">В работе</span>
-                  <span className="ml-auto text-xs text-white/50">{getStatusCount('in_progress')}</span>
+                  <span className="text-sm font-medium text-foreground">В работе</span>
+                  <span className="ml-auto text-xs text-muted-foreground">{getStatusCount('in_progress')}</span>
                 </button>
 
                 {/* Выполнено */}
@@ -407,19 +407,19 @@ export function FiltersPanel({
                   className={`flex w-full items-center gap-3 rounded-lg border p-3 transition-all ${
                     filters.statuses.includes('completed')
                       ? 'border-emerald-500/50 bg-emerald-500/10'
-                      : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06]'
+                      : 'border-border bg-muted/30 hover:bg-muted'
                   }`}
                 >
                   <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                  <span className="text-sm font-medium text-white">Выполнено</span>
-                  <span className="ml-auto text-xs text-white/50">{getStatusCount('completed')}</span>
+                  <span className="text-sm font-medium text-foreground">Выполнено</span>
+                  <span className="ml-auto text-xs text-muted-foreground">{getStatusCount('completed')}</span>
                 </button>
               </div>
             </div>
 
             {/* Фильтр по дедлайнам */}
             <div>
-              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-white/60">
+              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 <span>Дедлайн</span>
               </div>
@@ -429,11 +429,11 @@ export function FiltersPanel({
                   className={`flex w-full items-center gap-3 rounded-lg border p-3 transition-all ${
                     filters.deadlineFilter === 'overdue'
                       ? 'border-red-500/50 bg-red-500/10'
-                      : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06]'
+                      : 'border-border bg-muted/30 hover:bg-muted'
                   }`}
                 >
                   <AlertTriangle className="h-4 w-4 text-red-400" />
-                  <span className="text-sm font-medium text-white">Просрочено</span>
+                  <span className="text-sm font-medium text-foreground">Просрочено</span>
                 </button>
 
                 <button
@@ -441,11 +441,11 @@ export function FiltersPanel({
                   className={`flex w-full items-center gap-3 rounded-lg border p-3 transition-all ${
                     filters.deadlineFilter === 'today'
                       ? 'border-orange-500/50 bg-orange-500/10'
-                      : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06]'
+                      : 'border-border bg-muted/30 hover:bg-muted'
                   }`}
                 >
                   <Clock className="h-4 w-4 text-orange-400" />
-                  <span className="text-sm font-medium text-white">Сегодня</span>
+                  <span className="text-sm font-medium text-foreground">Сегодня</span>
                 </button>
 
                 <button
@@ -453,17 +453,17 @@ export function FiltersPanel({
                   className={`flex w-full items-center gap-3 rounded-lg border p-3 transition-all ${
                     filters.deadlineFilter === 'week'
                       ? 'border-yellow-500/50 bg-yellow-500/10'
-                      : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06]'
+                      : 'border-border bg-muted/30 hover:bg-muted'
                   }`}
                 >
                   <Clock className="h-4 w-4 text-yellow-400" />
-                  <span className="text-sm font-medium text-white">На неделе</span>
+                  <span className="text-sm font-medium text-foreground">На неделе</span>
                 </button>
 
                 {filters.deadlineFilter !== 'all' && (
                   <button
                     onClick={() => setDeadlineFilter('all')}
-                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] p-3 text-left text-sm font-medium text-white/70 hover:bg-white/[0.06] transition-all"
+                    className="w-full rounded-lg border border-border bg-muted/30 p-3 text-left text-sm font-medium text-muted-foreground hover:bg-muted transition-all"
                   >
                     Все задачи
                   </button>
@@ -476,25 +476,25 @@ export function FiltersPanel({
               <>
                 {/* Заголовок «Мои задачи» + сортировка — без скролла */}
                 <div className="flex-shrink-0 mb-4 flex items-center justify-between gap-2">
-                  <h2 className="text-lg font-semibold text-white">Мои задачи</h2>
+                  <h2 className="text-lg font-semibold text-foreground">Мои задачи</h2>
                   <div className="relative">
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                      className="filters-panel-select appearance-none w-full rounded-lg border border-white/[0.12] bg-zinc-800/90 px-3 py-1.5 pr-8 text-sm text-white/90 hover:bg-zinc-700/90 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/20 cursor-pointer transition-colors"
+                      className="filters-panel-select appearance-none w-full rounded-lg border border-border bg-muted px-3 py-1.5 pr-8 text-sm text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring cursor-pointer transition-colors"
                     >
                       <option value="none">Все</option>
                       <option value="not_completed">Не выполненные</option>
                       <option value="in_progress">В работе</option>
                       <option value="deadline">По дедлайну</option>
                     </select>
-                    <ArrowUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/50 pointer-events-none" />
+                    <ArrowUpDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                   </div>
                 </div>
                 {/* Список задач — скролл только здесь, тонкий скроллбар */}
                 <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin-ios pl-3 pt-2 pr-1">
                   {myTasks.length === 0 ? (
-                    <div className="text-center py-8 text-white/40 text-sm">
+                    <div className="text-center py-8 text-muted-foreground text-sm">
                       У вас нет назначенных задач
                     </div>
                   ) : (
@@ -515,7 +515,7 @@ export function FiltersPanel({
                           } else if (task.marker_type === 'time') {
                             return 'border-blue-500/40';
                           }
-                          return 'border-white/[0.08]';
+                          return 'border-border';
                         };
 
                         const contentItems = (taskContentItems[task.id] || []).sort((a, b) => a.position - b.position);
@@ -526,20 +526,20 @@ export function FiltersPanel({
                           <div
                             key={task.id}
                             onClick={() => onTaskClick?.(task)}
-                            className={`relative rounded-lg border ${getBorderColor()} bg-white/[0.02] p-3 pr-9 cursor-pointer transition-all hover:bg-white/[0.06] ${
+                            className={`relative rounded-lg border ${getBorderColor()} bg-muted/30 p-3 pr-9 cursor-pointer transition-all hover:bg-muted ${
                               task.marker_type === 'urgent' 
                                 ? 'hover:border-red-500/60' 
                                 : task.marker_type === 'warning'
                                 ? 'hover:border-yellow-500/60'
                                 : task.marker_type === 'time'
                                 ? 'hover:border-blue-500/60'
-                                : 'hover:border-white/[0.12]'
+                                : 'hover:border-border'
                             }`}
                           >
                             {/* Статус + дедлайн — иконки в правом верхнем углу */}
                             <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
                               {task.deadline && (
-                                <span className={`flex items-center gap-0.5 text-[10px] ${overdue ? 'text-red-400' : 'text-white/40'}`} title={formattedDate ?? undefined}>
+                                <span className={`flex items-center gap-0.5 text-[10px] ${overdue ? 'text-red-400' : 'text-muted-foreground'}`} title={formattedDate ?? undefined}>
                                   <Clock className="h-3 w-3" />
                                 </span>
                               )}
@@ -551,17 +551,17 @@ export function FiltersPanel({
                               <div className="absolute -top-1.5 -left-1.5 z-40">
                                 {task.marker_type === 'urgent' && (
                                   <div className="bg-red-500 rounded-full p-0.5 shadow-lg ring-2 ring-red-500/30">
-                                    <AlertCircle className="h-4 w-4 text-white" strokeWidth={2.5} />
+                                    <AlertCircle className="h-4 w-4 text-foreground" strokeWidth={2.5} />
                                   </div>
                                 )}
                                 {task.marker_type === 'warning' && (
                                   <div className="bg-yellow-500 rounded-full p-0.5 shadow-lg ring-2 ring-yellow-500/30">
-                                    <AlertTriangle className="h-4 w-4 text-white" strokeWidth={2} />
+                                    <AlertTriangle className="h-4 w-4 text-foreground" strokeWidth={2} />
                                   </div>
                                 )}
                                 {task.marker_type === 'time' && (
                                   <div className="bg-blue-500 rounded-full p-0.5 shadow-lg ring-2 ring-blue-500/30">
-                                    <Clock className="h-4 w-4 text-white" strokeWidth={2} />
+                                    <Clock className="h-4 w-4 text-foreground" strokeWidth={2} />
                                   </div>
                                 )}
                               </div>
@@ -569,7 +569,7 @@ export function FiltersPanel({
 
                             {/* Заголовок */}
                             <div className="mb-1.5 pr-6">
-                              <h3 className="text-sm font-medium text-white line-clamp-2">
+                              <h3 className="text-sm font-medium text-foreground line-clamp-2">
                                 {task.title || 'Без названия'}
                               </h3>
                             </div>
@@ -577,7 +577,7 @@ export function FiltersPanel({
                             {/* Описание — стрелка в правом нижнем углу для разворота */}
                             {task.description && (
                               <div className="relative mb-2 pr-5">
-                                <p className={`text-xs text-white/60 ${expandedDescriptions.has(task.id) ? '' : 'line-clamp-2'}`}>
+                                <p className={`text-xs text-muted-foreground ${expandedDescriptions.has(task.id) ? '' : 'line-clamp-2'}`}>
                                   {task.description}
                                 </p>
                                 <button
@@ -591,7 +591,7 @@ export function FiltersPanel({
                                       return next;
                                     });
                                   }}
-                                  className="absolute bottom-0 right-0 p-0.5 text-white/40 hover:text-white/70 transition-colors"
+                                  className="absolute bottom-0 right-0 p-0.5 text-muted-foreground hover:text-foreground transition-colors"
                                   title={expandedDescriptions.has(task.id) ? 'Свернуть' : 'Развернуть'}
                                 >
                                   {expandedDescriptions.has(task.id) ? (
@@ -607,9 +607,9 @@ export function FiltersPanel({
                             {contentItems.length > 0 && (
                               <div className="space-y-0.5">
                                 {visibleContentItems.map((item) => (
-                                  <div key={item.id} className="flex items-start gap-2 text-xs text-white/60">
+                                  <div key={item.id} className="flex items-start gap-2 text-xs text-muted-foreground">
                                     <span className={`shrink-0 mt-0.5 h-2.5 w-2.5 rounded-full border ${
-                                      item.completed ? 'bg-emerald-500 border-emerald-400' : 'bg-white/[0.12] border-white/30'
+                                      item.completed ? 'bg-emerald-500 border-emerald-400' : 'bg-muted border-border'
                                     }`} />
                                     <span className={item.completed ? 'line-through opacity-60' : ''}>
                                       {item.content || '—'}
@@ -628,7 +628,7 @@ export function FiltersPanel({
                                         return next;
                                       });
                                     }}
-                                    className="flex items-center gap-0.5 text-[10px] text-white/40 hover:text-white/60 transition-colors mt-0.5"
+                                    className="flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-muted-foreground transition-colors mt-0.5"
                                   >
                                     {expandedContentInPanel.has(task.id) ? (
                                       <>Свернуть <ChevronUp className="h-3 w-3" /></>
@@ -650,7 +650,7 @@ export function FiltersPanel({
                                     return (
                                       <div
                                         key={`img-${index}`}
-                                        className="relative aspect-square w-10 rounded overflow-hidden bg-white/[0.06] border border-white/[0.08] cursor-pointer"
+                                        className="relative aspect-square w-10 rounded overflow-hidden bg-muted border border-border cursor-pointer"
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setSelectedImage(imageSrc);
@@ -668,15 +668,15 @@ export function FiltersPanel({
                                   {task.files && task.files.length > 0 && task.files.map((file, index) => (
                                     <div
                                       key={`file-${index}`}
-                                      className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08]"
+                                      className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-muted border border-border"
                                       onClick={(e) => e.stopPropagation()}
                                     >
-                                      <Paperclip className="h-2.5 w-2.5 text-white/50 flex-shrink-0" />
+                                      <Paperclip className="h-2.5 w-2.5 text-muted-foreground flex-shrink-0" />
                                       <a
                                         href={file.data}
                                         download={file.name}
                                         onClick={(e) => e.stopPropagation()}
-                                        className="text-[10px] text-white/70 hover:text-white truncate max-w-[100px]"
+                                        className="text-[10px] text-muted-foreground hover:text-foreground truncate max-w-[100px]"
                                         title={file.name}
                                       >
                                         {file.name}
@@ -701,7 +701,7 @@ export function FiltersPanel({
       {/* Модальное окно для просмотра изображений */}
       {selectedImage && (
         <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm"
           onClick={() => setSelectedImage(null)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
@@ -722,7 +722,7 @@ export function FiltersPanel({
                 e.stopPropagation();
                 setSelectedImage(null);
               }}
-              className="absolute -top-3 -right-3 rounded-full p-2.5 bg-red-500/90 hover:bg-red-500 text-white transition-all shadow-lg z-10 border-2 border-white/20"
+              className="absolute -top-3 -right-3 rounded-full p-2.5 bg-red-500/90 hover:bg-red-500 text-white transition-all shadow-lg z-10 border-2 border-border"
               title="Закрыть (Esc)"
             >
               <X className="h-5 w-5" />

@@ -25,7 +25,7 @@ export function ProjectsGrid({ projects, onCreateProject }: ProjectsGridProps) {
     <div className="space-y-6">
       {projects.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-white/60 mb-4">У вас пока нет проектов</p>
+          <p className="text-muted-foreground mb-4">У вас пока нет проектов</p>
           <Button onClick={onCreateProject} variant="outline">
             Создать первый проект
           </Button>
@@ -36,14 +36,14 @@ export function ProjectsGrid({ projects, onCreateProject }: ProjectsGridProps) {
             <Link
               key={project.id}
               href={`/board/${project.id}`}
-              className="glass-card rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-200"
+              className="glass-card rounded-2xl border border-border p-6 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-200"
             >
               <div className="flex items-start justify-between mb-4">
-                <h2 className="text-xl font-semibold text-white">{project.name}</h2>
+                <h2 className="text-xl font-semibold text-foreground">{project.name}</h2>
                 {project.role === 'owner' && (
                   <button
                     onClick={(e) => handleSettingsClick(e, project.id)}
-                    className="text-white/40 hover:text-white/70 transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                     aria-label="Настройки проекта"
                   >
                     <Settings className="h-4 w-4" />

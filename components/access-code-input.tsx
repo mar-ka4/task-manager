@@ -117,12 +117,12 @@ export function AccessCodeInput({ open, onOpenChange }: AccessCodeInputProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-white/[0.12] bg-zinc-900/98 backdrop-blur-2xl sm:max-w-[440px]">
+      <DialogContent className="sm:max-w-[440px]">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold text-white">
             Введите код доступа
           </DialogTitle>
-          <DialogDescription className="text-sm text-white/60">
+          <DialogDescription className="text-sm text-muted-foreground">
             Введите 8-значный код доступа для присоединения к проекту
           </DialogDescription>
         </DialogHeader>
@@ -141,7 +141,7 @@ export function AccessCodeInput({ open, onOpenChange }: AccessCodeInputProps) {
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
-                className="h-12 w-9 text-center text-lg font-bold tracking-wider border-white/[0.12] bg-white/[0.05] text-white focus:border-white/[0.2] focus:ring-white/10 focus:bg-white/[0.08] flex-shrink-0"
+                className="h-12 w-9 text-center text-lg font-bold tracking-wider border-border bg-muted/50 text-foreground focus:border-ring focus:ring-ring focus:bg-muted flex-shrink-0"
                 autoFocus={index === 0}
               />
             ))}

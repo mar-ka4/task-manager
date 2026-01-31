@@ -1495,8 +1495,7 @@ export default function BoardPage() {
           taskContentItems={taskContentItems}
           onLoadTaskContent={loadTaskContent}
           onTaskClick={(task) => {
-            setSelectedTask(task);
-            // Центрируем задачу на канвасе
+            // Только центрируем задачу на канвасе, панель настроек не открываем
             if (canvasRef.current) {
               const canvasRect = canvasRef.current.getBoundingClientRect();
               const centerX = canvasRect.width / 2;
@@ -1508,6 +1507,7 @@ export default function BoardPage() {
               setOffset({ x: newOffsetX, y: newOffsetY });
             }
           }}
+          onTaskStatusChange={(taskId, status) => handleUpdateTask(taskId, { status })}
         />
 
         <div

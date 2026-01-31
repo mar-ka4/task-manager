@@ -21,6 +21,7 @@ export interface FiltersPanelProps {
   }) => void;
   currentUserId: string | null;
   onTaskClick?: (task: Task) => void;
+  onTaskStatusChange?: (taskId: string, status: 'todo' | 'in_progress' | 'completed') => void;
   taskContentItems?: Record<string, TaskContentItem[]>;
   onLoadTaskContent?: (taskId: string) => void | Promise<void>;
 }
@@ -34,6 +35,7 @@ export function FiltersPanel({
   onFiltersChange,
   currentUserId,
   onTaskClick,
+  onTaskStatusChange,
   taskContentItems = {},
   onLoadTaskContent,
 }: FiltersPanelProps) {
@@ -194,12 +196,19 @@ export function FiltersPanel({
       case 'completed':
         return <CheckCircle2 className="h-4 w-4 text-emerald-400" />;
       case 'in_progress':
-        return <PlayCircle className="h-4 w-4 text-blue-400" />;
+        return <PlayCircle className="h-4 w-4 text-amber-400" />;
       case 'blocked':
         return <AlertTriangle className="h-4 w-4 text-red-400" />;
       default:
         return <Circle className="h-4 w-4 text-gray-400" />;
     }
+  };
+
+  // Следующий статус по циклу: todo -> in_progress -> completed -> todo
+  const getNextStatus = (current: string): 'todo' | 'in_progress' | 'completed' => {
+    if (current === 'todo') return 'in_progress';
+    if (current === 'in_progress') return 'completed';
+    return 'todo';
   };
 
   // Получение названия статуса
@@ -536,14 +545,26 @@ export function FiltersPanel({
                                 : 'hover:border-border'
                             }`}
                           >
-                            {/* Статус + дедлайн — иконки в правом верхнем углу */}
+                            {/* Статус + дедлайн — иконки в правом верхнем углу; клик по статусу меняет статус по циклу */}
                             <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
                               {task.deadline && (
                                 <span className={`flex items-center gap-0.5 text-[10px] ${overdue ? 'text-red-400' : 'text-muted-foreground'}`} title={formattedDate ?? undefined}>
                                   <Clock className="h-3 w-3" />
                                 </span>
                               )}
-                              <span title={getStatusName(task.status)}>{getStatusIcon(task.status)}</span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  const next = getNextStatus(task.status || 'todo');
+                                  onTaskStatusChange?.(task.id, next);
+                                }}
+                                className="rounded p-0.5 hover:bg-muted transition-colors cursor-pointer touch-manipulation"
+                                title={`${getStatusName(task.status)} — клик: ${getStatusName(getNextStatus(task.status || 'todo'))}`}
+                              >
+                                {getStatusIcon(task.status || 'todo')}
+                              </button>
                             </div>
 
                             {/* Маркер задачи (пометка) */}

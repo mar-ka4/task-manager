@@ -211,6 +211,112 @@ const getConnectionCircleHoverColor = (task1: Task | null, task2: Task | null): 
   return defaultColor;
 };
 
+// Линейное представление задач по исполнителям (расширенный вид «Мои задачи»)
+function AssigneesTasksView({
+  tasks,
+  members,
+  onTaskClick,
+}: {
+  tasks: Task[];
+  members: ProjectMember[];
+  onTaskClick?: (task: Task) => void;
+}) {
+  // Берём только задачи с назначенным исполнителем
+  const rows = useMemo(() => {
+    return members
+      .map((member) => {
+        const memberTasks = tasks.filter((t) => t.assignee_id === member.user_id);
+        return memberTasks.length
+          ? {
+              member,
+              tasks: memberTasks,
+            }
+          : null;
+      })
+      .filter((row): row is { member: ProjectMember; tasks: Task[] } => row !== null);
+  }, [members, tasks]);
+
+  if (!rows.length) {
+    return (
+      <div className="flex h-full items-center justify-center px-4">
+        <div className="text-center text-sm text-muted-foreground max-w-sm">
+          Нет задач с назначенными исполнителями. Назначьте исполнителей для задач, чтобы увидеть их в этом представлении.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-full flex-col overflow-hidden px-3 sm:px-4 md:px-6 pb-3">
+      <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        Задачи по исполнителям
+      </div>
+
+      <div className="flex-1 min-h-0 space-y-3 overflow-y-auto">
+        {rows.map(({ member, tasks: memberTasks }) => (
+          <div key={member.user_id || member.id} className="flex items-start gap-3">
+            {/* Левая колонка — исполнитель */}
+            <div className="w-40 flex-shrink-0 flex items-center gap-2">
+              <div
+                className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-foreground overflow-hidden ring-1 ring-border"
+                style={{ backgroundColor: member.avatar_color || '#e5e5e5' }}
+              >
+                {member.avatar_image ? (
+                  <img
+                    src={member.avatar_image}
+                    alt={member.display_name || 'Avatar'}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span>{member.display_name?.[0]?.toUpperCase() || '?'}</span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-medium text-foreground truncate">
+                  {member.display_name || 'Без имени'}
+                </div>
+                <div className="text-[10px] text-muted-foreground">
+                  {memberTasks.length} задач
+                </div>
+              </div>
+            </div>
+
+            {/* Правая часть — задачи исполнителя */}
+            <div className="flex-1 min-w-0 overflow-x-auto">
+              <div className="flex gap-2 pb-1">
+                {memberTasks.map((task) => (
+                  <button
+                    key={task.id}
+                    type="button"
+                    onClick={() => onTaskClick?.(task)}
+                    className="group min-w-[220px] max-w-xs rounded-xl border border-border bg-card/80 px-3 py-2 text-left hover:border-primary/50 hover:shadow-md hover:shadow-primary/5 transition-all"
+                  >
+                    <div className="mb-1 flex items-start gap-1.5">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-semibold text-foreground line-clamp-2">
+                          {task.title || 'Без названия'}
+                        </div>
+                      </div>
+                      {task.deadline && (
+                        <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                      )}
+                    </div>
+                    {task.description && (
+                      <p className="text-[11px] text-muted-foreground line-clamp-3">
+                        {task.description}
+                      </p>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function BoardPage() {
   const router = useRouter();
   const params = useParams();
@@ -235,6 +341,8 @@ export default function BoardPage() {
     statuses: [] as string[],
     deadlineFilter: 'all' as string,
   });
+  // Основной режим отображения: канвас или линейный вид по исполнителям
+  const [mainView, setMainView] = useState<'canvas' | 'assignees'>('canvas');
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'canvas' | 'task' | null; taskId?: string }>({
     x: 0,
     y: 0,
@@ -1448,6 +1556,32 @@ export default function BoardPage() {
               }}
             />
 
+            {/* Переключатель режима доски: схема / по исполнителям */}
+            <div className="hidden md:flex items-center gap-0.5 rounded-lg border border-border bg-muted/30 px-1 py-0.5">
+              <button
+                type="button"
+                onClick={() => setMainView('canvas')}
+                className={`px-2 py-0.5 text-[11px] rounded-md transition-colors ${
+                  mainView === 'canvas'
+                    ? 'bg-background text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Схема
+              </button>
+              <button
+                type="button"
+                onClick={() => setMainView('assignees')}
+                className={`px-2 py-0.5 text-[11px] rounded-md transition-colors ${
+                  mainView === 'assignees'
+                    ? 'bg-background text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                По исполнителям
+              </button>
+            </div>
+
             {isOwner && (
               <Button
                 variant="ghost"
@@ -1510,6 +1644,7 @@ export default function BoardPage() {
           onTaskStatusChange={(taskId, status) => handleUpdateTask(taskId, { status })}
         />
 
+        {mainView === 'canvas' ? (
         <div
           ref={canvasRef}
           className="relative w-full h-full overflow-hidden touch-pan-x touch-pan-y"
@@ -3149,6 +3284,27 @@ export default function BoardPage() {
             })}
           </div>
         </div>
+        ) : (
+          <AssigneesTasksView
+            tasks={tasks}
+            members={members}
+            onTaskClick={(task) => {
+              // При клике в линейном виде — открываем панель и центрируем задачу на канвасе
+              setSelectedTask(task);
+              setMainView('canvas');
+              if (canvasRef.current) {
+                const canvasRect = canvasRef.current.getBoundingClientRect();
+                const centerX = canvasRect.width / 2;
+                const centerY = canvasRect.height / 2;
+                const taskX = task.position_x * scale + offset.x;
+                const taskY = task.position_y * scale + offset.y;
+                const newOffsetX = offset.x + (centerX - taskX);
+                const newOffsetY = offset.y + (centerY - taskY);
+                setOffset({ x: newOffsetX, y: newOffsetY });
+              }
+            }}
+          />
+        )}
       </div>
 
       {/* Панель настроек задачи */}

@@ -288,11 +288,12 @@ function AssigneesTasksView({
   return (
     <div className="flex h-full flex-col overflow-hidden px-3 sm:px-4 md:px-6 pb-3">
       {/* Собственная панель фильтров для режима по исполнителям */}
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Задачи по исполнителям
         </div>
-        <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-muted/40 px-1 py-0.5">
+        <div className="flex items-center gap-2">
+          <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-muted/40 px-1.5 py-1">
           {(['all', 'todo', 'in_progress', 'completed'] as const).map((value) => (
             <button
               key={value}
@@ -308,37 +309,52 @@ function AssigneesTasksView({
             </button>
           ))}
         </div>
+          {/* Дополнительный фильтр: скрыть выполненные */}
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-2.5 py-1 text-[11px] text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            onClick={() =>
+              setStatusFilter((prev) => (prev === 'completed' ? 'all' : prev))
+            }
+            disabled={statusFilter === 'completed'}
+          >
+            <span className="h-2 w-2 rounded-full bg-emerald-500/60 border border-emerald-500/80" />
+            <span>Скрыть выполненные</span>
+          </button>
+        </div>
       </div>
 
-      <div className="flex-1 min-h-0 space-y-3 overflow-y-auto scrollbar-thin-ios">
+      <div className="flex-1 min-h-0 space-y-4 overflow-y-auto scrollbar-thin-ios">
         {rows.map(({ member, tasks: memberTasks, stats }) => (
           <div
             key={member.user_id || member.id}
-            className="flex items-start gap-3 rounded-xl border border-border bg-background/40 px-3 py-2"
+            className="relative flex items-start gap-4 rounded-xl border border-border bg-background/40 px-4 py-3"
           >
             {/* Левая колонка — исполнитель */}
-            <div className="w-40 flex-shrink-0 flex items-center gap-2">
-              <div
-                className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-foreground overflow-hidden ring-1 ring-border"
-                style={{ backgroundColor: member.avatar_color || '#e5e5e5' }}
-              >
-                {member.avatar_image ? (
-                  <img
-                    src={member.avatar_image}
-                    alt={member.display_name || 'Avatar'}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span>{member.display_name?.[0]?.toUpperCase() || '?'}</span>
-                )}
+            <div className="w-56 flex-shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold text-foreground overflow-hidden ring-1 ring-border"
+                  style={{ backgroundColor: member.avatar_color || '#e5e5e5' }}
+                >
+                  {member.avatar_image ? (
+                    <img
+                      src={member.avatar_image}
+                      alt={member.display_name || 'Avatar'}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span>{member.display_name?.[0]?.toUpperCase() || '?'}</span>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-medium text-foreground truncate">
+                    {member.display_name || 'Без имени'}
+                  </div>
+                </div>
               </div>
-              <div className="min-w-0">
-                <div className="text-xs font-medium text-foreground truncate">
-                  {member.display_name || 'Без имени'}
-                </div>
-                <div className="text-[10px] text-muted-foreground">
-                  Всего {stats.total} · Не начато {stats.todo} · В работе {stats.inProgress} · Выполнено {stats.completed}
-                </div>
+              <div className="mt-2 text-[11px] text-muted-foreground leading-snug">
+                Всего {stats.total} · Не начато {stats.todo} · В работе {stats.inProgress} · Выполнено {stats.completed}
               </div>
             </div>
 
@@ -388,33 +404,39 @@ function AssigneesTasksView({
                         : 'Не начато'}
                     </button>
 
-                    {/* Развёрнутый вид поверх карточки */}
-                    {expandedTaskId === task.id && (
-                      <div className="absolute inset-0 z-20 rounded-xl border border-primary bg-background/95 shadow-xl p-3 flex flex-col gap-2">
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Развёрнутая карточка поверх всей строки */}
+            {expandedTaskId &&
+              memberTasks.some((t) => t.id === expandedTaskId) && (
+                <div className="absolute inset-0 z-20 rounded-xl border border-primary bg-background/95 shadow-xl p-4 flex flex-col gap-3">
+                  {(() => {
+                    const task = memberTasks.find((t) => t.id === expandedTaskId)!;
+                    return (
+                      <>
                         <div className="flex items-start justify-between gap-2">
-                          <div className="text-xs font-semibold text-foreground">
+                          <div className="text-sm font-semibold text-foreground">
                             {task.title || 'Без названия'}
                           </div>
                           <button
                             type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setExpandedTaskId(null);
-                            }}
-                            className="text-[10px] text-muted-foreground hover:text-foreground"
+                            onClick={() => setExpandedTaskId(null)}
+                            className="text-xs text-muted-foreground hover:text-foreground"
                           >
                             Закрыть
                           </button>
                         </div>
                         {task.description && (
-                          <p className="text-[11px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {task.description}
                           </p>
                         )}
                         <div className="mt-auto flex items-center justify-between gap-2">
-                          <span className="text-[10px] text-muted-foreground">
-                            Статус:
-                            {' '}
+                          <span className="text-[11px] text-muted-foreground">
+                            Статус:&nbsp;
                             {task.status === 'completed'
                               ? 'Выполнено'
                               : task.status === 'in_progress'
@@ -423,22 +445,20 @@ function AssigneesTasksView({
                           </span>
                           <button
                             type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
+                            onClick={() => {
                               const next = getNextStatus(task.status || 'todo');
                               onTaskStatusChange?.(task.id, next);
                             }}
-                            className="inline-flex items-center rounded-full border border-border bg-muted/60 px-2 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            className="inline-flex items-center rounded-full border border-border bg-muted/60 px-2.5 py-1 text-[11px] text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                           >
                             Сменить статус
                           </button>
                         </div>
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
           </div>
         ))}
       </div>

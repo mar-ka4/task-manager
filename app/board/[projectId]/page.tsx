@@ -215,26 +215,65 @@ const getConnectionCircleHoverColor = (task1: Task | null, task2: Task | null): 
 function AssigneesTasksView({
   tasks,
   members,
-  onTaskClick,
+  onTaskStatusChange,
 }: {
   tasks: Task[];
   members: ProjectMember[];
-  onTaskClick?: (task: Task) => void;
+  onTaskStatusChange?: (taskId: string, status: 'todo' | 'in_progress' | 'completed') => void | Promise<void>;
 }) {
+  const [statusFilter, setStatusFilter] = useState<'all' | 'todo' | 'in_progress' | 'completed'>('all');
+  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   // Берём только задачи с назначенным исполнителем
   const rows = useMemo(() => {
     return members
       .map((member) => {
-        const memberTasks = tasks.filter((t) => t.assignee_id === member.user_id);
-        return memberTasks.length
-          ? {
-              member,
-              tasks: memberTasks,
-            }
-          : null;
+        const allMemberTasks = tasks.filter((t) => t.assignee_id === member.user_id);
+        if (!allMemberTasks.length) return null;
+
+        const visibleTasks =
+          statusFilter === 'all'
+            ? allMemberTasks
+            : allMemberTasks.filter((t) => t.status === statusFilter);
+
+        if (!visibleTasks.length) return null;
+
+        const stats = {
+          total: allMemberTasks.length,
+          todo: allMemberTasks.filter((t) => t.status === 'todo').length,
+          inProgress: allMemberTasks.filter((t) => t.status === 'in_progress').length,
+          completed: allMemberTasks.filter((t) => t.status === 'completed').length,
+        };
+
+        return {
+          member,
+          tasks: visibleTasks,
+          stats,
+        };
       })
-      .filter((row): row is { member: ProjectMember; tasks: Task[] } => row !== null);
-  }, [members, tasks]);
+      .filter(
+        (row): row is { member: ProjectMember; tasks: Task[]; stats: { total: number; todo: number; inProgress: number; completed: number } } =>
+          row !== null
+      );
+  }, [members, tasks, statusFilter]);
+
+  const getStatusFilterLabel = (value: typeof statusFilter) => {
+    switch (value) {
+      case 'todo':
+        return 'Не начато';
+      case 'in_progress':
+        return 'В работе';
+      case 'completed':
+        return 'Выполнено';
+      default:
+        return 'Все';
+    }
+  };
+
+  const getNextStatus = (current: string): 'todo' | 'in_progress' | 'completed' => {
+    if (current === 'todo') return 'in_progress';
+    if (current === 'in_progress') return 'completed';
+    return 'todo';
+  };
 
   if (!rows.length) {
     return (
@@ -248,13 +287,35 @@ function AssigneesTasksView({
 
   return (
     <div className="flex h-full flex-col overflow-hidden px-3 sm:px-4 md:px-6 pb-3">
-      <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        Задачи по исполнителям
+      {/* Собственная панель фильтров для режима по исполнителям */}
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Задачи по исполнителям
+        </div>
+        <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-muted/40 px-1 py-0.5">
+          {(['all', 'todo', 'in_progress', 'completed'] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setStatusFilter(value)}
+              className={`px-2 py-0.5 text-[11px] rounded-md transition-colors ${
+                statusFilter === value
+                  ? 'bg-background text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {getStatusFilterLabel(value)}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="flex-1 min-h-0 space-y-3 overflow-y-auto">
-        {rows.map(({ member, tasks: memberTasks }) => (
-          <div key={member.user_id || member.id} className="flex items-start gap-3">
+      <div className="flex-1 min-h-0 space-y-3 overflow-y-auto scrollbar-thin-ios">
+        {rows.map(({ member, tasks: memberTasks, stats }) => (
+          <div
+            key={member.user_id || member.id}
+            className="flex items-start gap-3 rounded-xl border border-border bg-background/40 px-3 py-2"
+          >
             {/* Левая колонка — исполнитель */}
             <div className="w-40 flex-shrink-0 flex items-center gap-2">
               <div
@@ -276,21 +337,24 @@ function AssigneesTasksView({
                   {member.display_name || 'Без имени'}
                 </div>
                 <div className="text-[10px] text-muted-foreground">
-                  {memberTasks.length} задач
+                  Всего {stats.total} · Не начато {stats.todo} · В работе {stats.inProgress} · Выполнено {stats.completed}
                 </div>
               </div>
             </div>
 
             {/* Правая часть — задачи исполнителя */}
-            <div className="flex-1 min-w-0 overflow-x-auto">
+            <div className="flex-1 min-w-0 overflow-x-auto scrollbar-thin-ios">
               <div className="flex gap-2 pb-1">
                 {memberTasks.map((task) => (
                   <button
                     key={task.id}
                     type="button"
-                    onClick={() => onTaskClick?.(task)}
-                    className="group min-w-[220px] max-w-xs rounded-xl border border-border bg-card/80 px-3 py-2 text-left hover:border-primary/50 hover:shadow-md hover:shadow-primary/5 transition-all"
+                    onClick={() =>
+                      setExpandedTaskId((prev) => (prev === task.id ? null : task.id))
+                    }
+                    className="group relative min-w-[220px] max-w-xs rounded-xl border border-border bg-card/80 px-3 py-2 text-left hover:border-primary/50 hover:shadow-md hover:shadow-primary/5 transition-all"
                   >
+                    {/* Сжатый вид */}
                     <div className="mb-1 flex items-start gap-1.5">
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-semibold text-foreground line-clamp-2">
@@ -305,6 +369,71 @@ function AssigneesTasksView({
                       <p className="text-[11px] text-muted-foreground line-clamp-3">
                         {task.description}
                       </p>
+                    )}
+
+                    {/* Статус задачи — клик циклично меняет статус */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const next = getNextStatus(task.status || 'todo');
+                        onTaskStatusChange?.(task.id, next);
+                      }}
+                      className="mt-1 inline-flex items-center rounded-full border border-border bg-muted/60 px-2 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    >
+                      {task.status === 'completed'
+                        ? 'Выполнено'
+                        : task.status === 'in_progress'
+                        ? 'В работе'
+                        : 'Не начато'}
+                    </button>
+
+                    {/* Развёрнутый вид поверх карточки */}
+                    {expandedTaskId === task.id && (
+                      <div className="absolute inset-0 z-20 rounded-xl border border-primary bg-background/95 shadow-xl p-3 flex flex-col gap-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="text-xs font-semibold text-foreground">
+                            {task.title || 'Без названия'}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedTaskId(null);
+                            }}
+                            className="text-[10px] text-muted-foreground hover:text-foreground"
+                          >
+                            Закрыть
+                          </button>
+                        </div>
+                        {task.description && (
+                          <p className="text-[11px] text-muted-foreground">
+                            {task.description}
+                          </p>
+                        )}
+                        <div className="mt-auto flex items-center justify-between gap-2">
+                          <span className="text-[10px] text-muted-foreground">
+                            Статус:
+                            {' '}
+                            {task.status === 'completed'
+                              ? 'Выполнено'
+                              : task.status === 'in_progress'
+                              ? 'В работе'
+                              : 'Не начато'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const next = getNextStatus(task.status || 'todo');
+                              onTaskStatusChange?.(task.id, next);
+                            }}
+                            className="inline-flex items-center rounded-full border border-border bg-muted/60 px-2 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          >
+                            Сменить статус
+                          </button>
+                        </div>
+                      </div>
                     )}
                   </button>
                 ))}
@@ -1615,34 +1744,36 @@ export default function BoardPage() {
         </div>
       </header>
 
-      {/* Основная область - Канвас */}
+      {/* Основная область - Канвас / По исполнителям */}
       <div className="flex-1 overflow-hidden mt-14 sm:mt-16 relative pb-[env(safe-area-inset-bottom)]">
-        {/* Панель фильтров */}
-        <FiltersPanel
-          isOpen={isFilterOpen}
-          onToggle={() => setIsFilterOpen(!isFilterOpen)}
-          tasks={tasks}
-          members={members}
-          filters={filters}
-          onFiltersChange={setFilters}
-          currentUserId={currentUserId}
-          taskContentItems={taskContentItems}
-          onLoadTaskContent={loadTaskContent}
-          onTaskClick={(task) => {
-            // Только центрируем задачу на канвасе, панель настроек не открываем
-            if (canvasRef.current) {
-              const canvasRect = canvasRef.current.getBoundingClientRect();
-              const centerX = canvasRect.width / 2;
-              const centerY = canvasRect.height / 2;
-              const taskX = task.position_x * scale + offset.x;
-              const taskY = task.position_y * scale + offset.y;
-              const newOffsetX = offset.x + (centerX - taskX);
-              const newOffsetY = offset.y + (centerY - taskY);
-              setOffset({ x: newOffsetX, y: newOffsetY });
-            }
-          }}
-          onTaskStatusChange={(taskId, status) => handleUpdateTask(taskId, { status })}
-        />
+        {/* Панель фильтров — только в режиме канваса */}
+        {mainView === 'canvas' && (
+          <FiltersPanel
+            isOpen={isFilterOpen}
+            onToggle={() => setIsFilterOpen(!isFilterOpen)}
+            tasks={tasks}
+            members={members}
+            filters={filters}
+            onFiltersChange={setFilters}
+            currentUserId={currentUserId}
+            taskContentItems={taskContentItems}
+            onLoadTaskContent={loadTaskContent}
+            onTaskClick={(task) => {
+              // Только центрируем задачу на канвасе, панель настроек не открываем
+              if (canvasRef.current) {
+                const canvasRect = canvasRef.current.getBoundingClientRect();
+                const centerX = canvasRect.width / 2;
+                const centerY = canvasRect.height / 2;
+                const taskX = task.position_x * scale + offset.x;
+                const taskY = task.position_y * scale + offset.y;
+                const newOffsetX = offset.x + (centerX - taskX);
+                const newOffsetY = offset.y + (centerY - taskY);
+                setOffset({ x: newOffsetX, y: newOffsetY });
+              }
+            }}
+            onTaskStatusChange={(taskId, status) => handleUpdateTask(taskId, { status })}
+          />
+        )}
 
         {mainView === 'canvas' ? (
         <div
@@ -3288,21 +3419,7 @@ export default function BoardPage() {
           <AssigneesTasksView
             tasks={tasks}
             members={members}
-            onTaskClick={(task) => {
-              // При клике в линейном виде — открываем панель и центрируем задачу на канвасе
-              setSelectedTask(task);
-              setMainView('canvas');
-              if (canvasRef.current) {
-                const canvasRect = canvasRef.current.getBoundingClientRect();
-                const centerX = canvasRect.width / 2;
-                const centerY = canvasRect.height / 2;
-                const taskX = task.position_x * scale + offset.x;
-                const taskY = task.position_y * scale + offset.y;
-                const newOffsetX = offset.x + (centerX - taskX);
-                const newOffsetY = offset.y + (centerY - taskY);
-                setOffset({ x: newOffsetX, y: newOffsetY });
-              }
-            }}
+            onTaskStatusChange={(taskId, status) => handleUpdateTask(taskId, { status })}
           />
         )}
       </div>

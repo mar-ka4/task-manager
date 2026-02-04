@@ -222,6 +222,7 @@ function AssigneesTasksView({
   onTaskStatusChange?: (taskId: string, status: 'todo' | 'in_progress' | 'completed') => void | Promise<void>;
 }) {
   const [statusFilter, setStatusFilter] = useState<'all' | 'todo' | 'in_progress' | 'completed'>('all');
+  const [hideCompleted, setHideCompleted] = useState(false);
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   // Берём только задачи с назначенным исполнителем
   const rows = useMemo(() => {
@@ -230,10 +231,16 @@ function AssigneesTasksView({
         const allMemberTasks = tasks.filter((t) => t.assignee_id === member.user_id);
         if (!allMemberTasks.length) return null;
 
-        const visibleTasks =
+        let baseTasks =
           statusFilter === 'all'
             ? allMemberTasks
             : allMemberTasks.filter((t) => t.status === statusFilter);
+
+        if (hideCompleted) {
+          baseTasks = baseTasks.filter((t) => t.status !== 'completed');
+        }
+
+        const visibleTasks = baseTasks;
 
         if (!visibleTasks.length) return null;
 
@@ -312,13 +319,14 @@ function AssigneesTasksView({
           {/* Дополнительный фильтр: скрыть выполненные */}
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-2.5 py-1 text-[11px] text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            onClick={() =>
-              setStatusFilter((prev) => (prev === 'completed' ? 'all' : prev))
-            }
-            disabled={statusFilter === 'completed'}
+            className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] transition-colors ${
+              hideCompleted
+                ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-400'
+                : 'border-border bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted'
+            }`}
+            onClick={() => setHideCompleted((prev) => !prev)}
           >
-            <span className="h-2 w-2 rounded-full bg-emerald-500/60 border border-emerald-500/80" />
+            <span className="h-2 w-2 rounded-full bg-emerald-500/70 border border-emerald-500/90" />
             <span>Скрыть выполненные</span>
           </button>
         </div>

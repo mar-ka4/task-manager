@@ -72,7 +72,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { getTasks, createTask, updateTask, deleteTask, getProject, getProjectMembers, updateProject, getTaskContent, createTaskContentItem, updateTaskContentItem, deleteTaskContentItem, enableTaskContent, getTaskConnections, createTaskConnection, deleteTaskConnection } from '@/lib/api/client';
 import { Task, Project, ProjectMember, TaskContentItem, TaskConnection } from '@/lib/types';
 import { subscribeToProject, unsubscribeFromProject } from '@/lib/websocket';
-import { ArrowLeft, Settings, ChevronUp, ChevronDown, Globe, Lock, Users, Edit2, Check, X, Filter, Trash2, Plus, User, Bold, Italic, Calendar, List, Paperclip, AlertCircle, AlertTriangle, Clock, CheckCircle2, Circle, PlayCircle, EyeOff } from 'lucide-react';
+import { ArrowLeft, Settings, ChevronUp, ChevronDown, Globe, Lock, Users, Edit2, Check, X, Filter, Trash2, Plus, User, Bold, Italic, Calendar, List, Paperclip, AlertCircle, AlertTriangle, Clock, CheckCircle2, Circle, PlayCircle } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -221,9 +221,9 @@ function AssigneesTasksView({
   members: ProjectMember[];
   onTaskStatusChange?: (taskId: string, status: 'todo' | 'in_progress' | 'completed') => void | Promise<void>;
 }) {
-  const [statusFilter, setStatusFilter] = useState<'all' | 'todo' | 'in_progress' | 'completed'>('all');
-  const [hideCompleted, setHideCompleted] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'actual' | 'todo' | 'in_progress' | 'completed'>('all');
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   // Берём только задачи с назначенным исполнителем
   const rows = useMemo(() => {
     return members
@@ -231,13 +231,13 @@ function AssigneesTasksView({
         const allMemberTasks = tasks.filter((t) => t.assignee_id === member.user_id);
         if (!allMemberTasks.length) return null;
 
-        let baseTasks =
-          statusFilter === 'all'
-            ? allMemberTasks
-            : allMemberTasks.filter((t) => t.status === statusFilter);
-
-        if (hideCompleted) {
-          baseTasks = baseTasks.filter((t) => t.status !== 'completed');
+        let baseTasks: Task[];
+        if (statusFilter === 'all') {
+          baseTasks = allMemberTasks;
+        } else if (statusFilter === 'actual') {
+          baseTasks = allMemberTasks.filter((t) => t.status !== 'completed');
+        } else {
+          baseTasks = allMemberTasks.filter((t) => t.status === statusFilter);
         }
 
         const visibleTasks = baseTasks;
@@ -261,7 +261,7 @@ function AssigneesTasksView({
         (row): row is { member: ProjectMember; tasks: Task[]; stats: { total: number; todo: number; inProgress: number; completed: number } } =>
           row !== null
       );
-  }, [members, tasks, statusFilter, hideCompleted]);
+  }, [members, tasks, statusFilter]);
 
   const getNextStatus = (current: string): 'todo' | 'in_progress' | 'completed' => {
     if (current === 'todo') return 'in_progress';
@@ -292,6 +292,7 @@ function AssigneesTasksView({
 
   const statusOptions: { value: typeof statusFilter; label: string; icon: React.ReactNode }[] = [
     { value: 'all', label: 'Все', icon: <List className="h-3.5 w-3.5" /> },
+    { value: 'actual', label: 'Актуальные', icon: <Clock className="h-3.5 w-3.5" /> },
     { value: 'todo', label: 'Не начато', icon: <Circle className="h-3.5 w-3.5" /> },
     { value: 'in_progress', label: 'В работе', icon: <PlayCircle className="h-3.5 w-3.5" /> },
     { value: 'completed', label: 'Выполнено', icon: <CheckCircle2 className="h-3.5 w-3.5" /> },
@@ -317,44 +318,23 @@ function AssigneesTasksView({
             </div>
           </div>
 
-          {/* Фильтры — статус и опции */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            {/* Сегментированный контрол статуса */}
-            <div className="inline-flex p-1 rounded-xl bg-muted/50 border border-border/60">
-              {statusOptions.map(({ value, label, icon }) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setStatusFilter(value)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 ${
-                    statusFilter === value
-                      ? 'bg-background text-foreground shadow-sm dark:shadow-none border border-border/60'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {icon}
-                  <span>{label}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Переключатель «Скрыть выполненные» */}
-            <button
-              type="button"
-              onClick={() => setHideCompleted((prev) => !prev)}
-              className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${
-                hideCompleted
-                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                  : 'bg-muted/40 text-muted-foreground hover:text-foreground border border-transparent hover:border-border/60'
-              }`}
-            >
-              {hideCompleted ? (
-                <EyeOff className="h-3.5 w-3.5" />
-              ) : (
-                <CheckCircle2 className="h-3.5 w-3.5 opacity-50" />
-              )}
-              <span>Скрыть выполненные</span>
-            </button>
+          {/* Фильтры — единая плашка */}
+          <div className="inline-flex p-1 rounded-xl bg-muted/50 border border-border/60">
+            {statusOptions.map(({ value, label, icon }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setStatusFilter(value)}
+                className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 ${
+                  statusFilter === value
+                    ? 'bg-background text-foreground shadow-sm dark:shadow-none border border-border/60'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {icon}
+                <span>{label}</span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -363,7 +343,7 @@ function AssigneesTasksView({
         {rows.map(({ member, tasks: memberTasks, stats }) => (
           <div
             key={member.user_id || member.id}
-            className="relative flex items-start gap-4 rounded-xl border border-border bg-background/40 px-4 py-3"
+            className="relative flex items-start gap-4 rounded-xl border border-border bg-background/40 pl-4 pt-3 pb-3"
           >
             {/* Левая колонка — исполнитель */}
             <div className="w-56 flex-shrink-0">
@@ -398,17 +378,32 @@ function AssigneesTasksView({
               <div className="flex items-start gap-2 pb-1">
                 {memberTasks.map((task) => {
                   const isExpanded = expandedTaskId === task.id;
+                  const taskImages = Array.isArray(task.images) ? task.images : [];
                   return (
                     <div
                       key={task.id}
-                      className="w-[220px] flex-shrink-0 rounded-xl border border-border bg-card/80 px-3 py-2 hover:border-primary/50 hover:shadow-md hover:shadow-primary/5 transition-all"
+                      className="relative w-[220px] flex-shrink-0 rounded-xl border border-border bg-card/80 px-3 py-2 pt-2 hover:bg-muted/40 transition-all"
                     >
+                      {/* Статус — вверху справа */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const next = getNextStatus(task.status || 'todo');
+                          onTaskStatusChange?.(task.id, next);
+                        }}
+                        className="absolute top-2 right-2 z-10 flex items-center justify-center rounded-full p-0.5 hover:bg-muted/60 transition-colors cursor-pointer"
+                        title={`${task.status === 'completed' ? 'Выполнено' : task.status === 'in_progress' ? 'В работе' : 'Не начато'} — клик: сменить`}
+                      >
+                        {getStatusIcon(task.status || 'todo')}
+                      </button>
+
                       <button
                         type="button"
                         onClick={() =>
                           setExpandedTaskId((prev) => (prev === task.id ? null : task.id))
                         }
-                        className="w-full text-left"
+                        className="w-full text-left pr-7"
                       >
                         <div className="mb-1 flex items-start gap-1.5">
                           <div className="flex-1 min-w-0">
@@ -425,20 +420,36 @@ function AssigneesTasksView({
                             {task.description}
                           </p>
                         )}
-                      </button>
 
-                      {/* Статус — только цветная иконка 1в1 как в «Мои задачи» */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const next = getNextStatus(task.status || 'todo');
-                          onTaskStatusChange?.(task.id, next);
-                        }}
-                        className="mt-2 flex items-center justify-center rounded-full p-1 hover:bg-muted/60 transition-colors cursor-pointer"
-                        title={`${task.status === 'completed' ? 'Выполнено' : task.status === 'in_progress' ? 'В работе' : 'Не начато'} — клик: сменить`}
-                      >
-                        {getStatusIcon(task.status || 'todo')}
+                        {/* Картинки задачи */}
+                        {taskImages.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {taskImages.slice(0, 4).map((image, index) => {
+                              const imageSrc = normalizeImageSrc(image);
+                              if (!imageSrc) return null;
+                              return (
+                                <div
+                                  key={`img-${index}`}
+                                  className="relative aspect-square w-8 h-8 rounded overflow-hidden bg-muted border border-border cursor-pointer flex-shrink-0"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedImage(imageSrc);
+                                  }}
+                                >
+                                  <img
+                                    src={imageSrc}
+                                    alt={`Изображение ${index + 1}`}
+                                    className="h-full w-full object-cover"
+                                    loading="lazy"
+                                  />
+                                </div>
+                              );
+                            })}
+                            {taskImages.length > 4 && (
+                              <span className="text-[10px] text-muted-foreground self-center">+{taskImages.length - 4}</span>
+                            )}
+                          </div>
+                        )}
                       </button>
                     </div>
                   );
@@ -448,6 +459,37 @@ function AssigneesTasksView({
           </div>
         ))}
       </div>
+
+      {/* Модальное окно просмотра изображения */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setSelectedImage(null)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setSelectedImage(null);
+          }}
+          tabIndex={-1}
+        >
+          <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center p-4">
+            <img
+              src={selectedImage}
+              alt="Просмотр"
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedImage(null);
+              }}
+              className="absolute -top-3 -right-3 rounded-full p-2.5 bg-red-500/90 hover:bg-red-500 text-white transition-all shadow-lg z-10 border-2 border-border"
+              title="Закрыть"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

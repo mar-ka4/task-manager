@@ -1611,31 +1611,31 @@ export default function BoardPage() {
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-neutral-100 via-zinc-50 to-neutral-50 dark:from-neutral-950 dark:via-zinc-950 dark:to-neutral-900">
       {/* Верхняя панель (Header) */}
-      <header className="fixed top-0 left-0 right-0 h-14 sm:h-16 z-50 border-b border-border bg-background/95 backdrop-blur-2xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3.5 safe-area-inset-top">
-        <div className="flex items-center justify-between h-full gap-2 min-w-0">
-          {/* Левая часть */}
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-        <button
-          onClick={() => router.push('/projects')}
-              className="rounded-xl p-1.5 sm:p-2 text-muted-foreground transition-all hover:bg-muted hover:text-foreground shrink-0"
-        >
-              <ArrowLeft className="h-5 w-5" />
-        </button>
+      <header className="fixed top-0 left-0 right-0 h-14 sm:h-16 z-50 border-b border-border bg-background/95/90 backdrop-blur-2xl px-3 sm:px-4 md:px-6 safe-area-inset-top">
+        <div className="flex items-center justify-between h-full gap-3 min-w-0">
+          {/* Левая часть: назад + название проекта */}
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <button
+              onClick={() => router.push('/projects')}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground transition-colors shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
 
             {!isEditingName ? (
               <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
-                <h1 className="text-base sm:text-xl font-semibold tracking-tight text-foreground truncate min-w-0">
+                <h1 className="text-sm sm:text-lg font-semibold tracking-tight text-foreground truncate min-w-0">
                   {project?.name || 'Проект'}
                 </h1>
                 {isOwner && (
                   <button
                     onClick={() => setIsEditingName(true)}
-                    className="rounded-lg p-1 sm:p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground/80 shrink-0"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground/80 transition-colors shrink-0"
                   >
                     <Edit2 className="h-4 w-4" />
                   </button>
                 )}
-      </div>
+              </div>
             ) : (
               <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
                 <Input
@@ -1661,7 +1661,7 @@ export default function BoardPage() {
                       setEditedName(project?.name || '');
                     }
                   }}
-                  className="h-8 sm:h-9 w-24 sm:w-48 md:w-64 border-border bg-muted/50 text-foreground placeholder:text-muted-foreground text-sm min-w-0"
+                  className="h-8 sm:h-9 w-28 sm:w-48 md:w-64 border-border bg-muted/50 text-foreground placeholder:text-muted-foreground text-sm min-w-0"
                   autoFocus
                 />
                 <button
@@ -1679,30 +1679,32 @@ export default function BoardPage() {
                       setIsEditingName(false);
                     }
                   }}
-                  className="rounded-lg p-2 text-emerald-400 hover:bg-emerald-500/10"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors"
                 >
                   <Check className="h-4 w-4" />
                 </button>
               </div>
             )}
 
-            {project?.is_public && (
-              <span className="hidden sm:flex items-center gap-1.5 rounded-full bg-emerald-500/[0.15] px-3 py-1.5 text-xs font-medium text-emerald-400 ring-1 ring-emerald-500/20 shrink-0">
-                <Globe className="h-3 w-3" />
-                Публичный
-              </span>
-            )}
-
-            {!canEdit && (
-              <span className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-500/[0.15] px-3 py-1.5 text-xs font-medium text-amber-400 ring-1 ring-amber-500/20 shrink-0">
-                <Lock className="h-3 w-3" />
-                Только просмотр
-              </span>
-            )}
+            {/* Бейджи видимости */}
+            <div className="hidden md:flex items-center gap-2 ml-2">
+              {project?.is_public && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400">
+                  <Globe className="h-3 w-3" />
+                  Публичный
+                </span>
+              )}
+              {!canEdit && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-400">
+                  <Lock className="h-3 w-3" />
+                  Только просмотр
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* Правая часть */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          {/* Правая часть: участники, режим, масштаб, настройки */}
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
             <OnlineUsersDropdown
               projectId={projectId}
               members={members}
@@ -1714,7 +1716,7 @@ export default function BoardPage() {
             />
 
             {/* Переключатель режима доски: схема / по исполнителям */}
-            <div className="hidden md:flex items-center gap-0.5 rounded-lg border border-border bg-muted/30 px-1 py-0.5">
+            <div className="hidden md:inline-flex items-center gap-0.5 rounded-full border border-border bg-muted/30 px-1 py-0.5">
               <button
                 type="button"
                 onClick={() => setMainView('canvas')}
@@ -1743,7 +1745,7 @@ export default function BoardPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 hover:bg-muted"
+                className="h-8 w-8 rounded-full hover:bg-muted"
                 onClick={() => setShowSettingsDialog(true)}
               >
                 <Settings className="h-4 w-4" />
@@ -1751,10 +1753,10 @@ export default function BoardPage() {
             )}
 
             {/* Контрол масштабирования — компактнее на мобильных */}
-            <div className="flex items-center gap-0.5 sm:gap-2 rounded-lg sm:rounded-xl border border-border bg-muted/30 px-1.5 py-0.5 sm:px-2 sm:py-1">
+            <div className="flex items-center gap-1 rounded-full border border-border bg-muted/30 px-1.5 py-0.5 sm:px-2 sm:py-1">
               <button
                 onClick={() => setScale((s) => Math.min(2, s + 0.1))}
-                className="rounded p-1 sm:p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all touch-manipulation"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-all touch-manipulation"
               >
                 <ChevronUp className="h-3.5 w-3.5 sm:h-4 w-4" />
               </button>
@@ -1763,7 +1765,7 @@ export default function BoardPage() {
               </span>
               <button
                 onClick={() => setScale((s) => Math.max(0.3, s - 0.1))}
-                className="rounded p-1 sm:p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all touch-manipulation"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-all touch-manipulation"
               >
                 <ChevronDown className="h-3.5 w-3.5 sm:h-4 w-4" />
               </button>

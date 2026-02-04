@@ -1686,21 +1686,7 @@ export default function BoardPage() {
               </div>
             )}
 
-            {/* Бейджи видимости */}
-            <div className="hidden md:flex items-center gap-2 ml-2">
-              {project?.is_public && (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400">
-                  <Globe className="h-3 w-3" />
-                  Публичный
-                </span>
-              )}
-              {!canEdit && (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-400">
-                  <Lock className="h-3 w-3" />
-                  Только просмотр
-                </span>
-              )}
-            </div>
+            {/* Бейджи видимости убраны для минимализма */}
           </div>
 
           {/* Правая часть: участники, режим, масштаб, настройки */}
@@ -1716,11 +1702,11 @@ export default function BoardPage() {
             />
 
             {/* Переключатель режима доски: схема / по исполнителям */}
-            <div className="hidden md:inline-flex items-center gap-0.5 rounded-full border border-border bg-muted/30 px-1 py-0.5">
+            <div className="hidden md:inline-flex h-8 items-center gap-0.5 rounded-full border border-border bg-muted/30 px-1.5 py-1">
               <button
                 type="button"
                 onClick={() => setMainView('canvas')}
-                className={`px-2 py-0.5 text-[11px] rounded-md transition-colors ${
+                className={`px-2 h-6 inline-flex items-center justify-center text-[11px] rounded-md transition-colors ${
                   mainView === 'canvas'
                     ? 'bg-background text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
@@ -1731,7 +1717,7 @@ export default function BoardPage() {
               <button
                 type="button"
                 onClick={() => setMainView('assignees')}
-                className={`px-2 py-0.5 text-[11px] rounded-md transition-colors ${
+                className={`px-2 h-6 inline-flex items-center justify-center text-[11px] rounded-md transition-colors ${
                   mainView === 'assignees'
                     ? 'bg-background text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
@@ -1752,22 +1738,22 @@ export default function BoardPage() {
               </Button>
             )}
 
-            {/* Контрол масштабирования — компактнее на мобильных */}
-            <div className="flex items-center gap-1 rounded-full border border-border bg-muted/30 px-1.5 py-0.5 sm:px-2 sm:py-1">
+            {/* Контрол масштабирования */}
+            <div className="hidden sm:inline-flex h-8 items-center gap-1 rounded-full border border-border bg-muted/30 px-1.5">
               <button
                 onClick={() => setScale((s) => Math.min(2, s + 0.1))}
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-all touch-manipulation"
+                className="inline-flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-all touch-manipulation"
               >
-                <ChevronUp className="h-3.5 w-3.5 sm:h-4 w-4" />
+                <ChevronUp className="h-3.5 w-3.5" />
               </button>
-              <span className="min-w-[36px] sm:min-w-[56px] text-center text-xs sm:text-sm font-medium text-foreground/90">
+              <span className="min-w-[40px] text-center text-xs font-medium text-foreground/90">
                 {Math.round(scale * 100)}%
               </span>
               <button
                 onClick={() => setScale((s) => Math.max(0.3, s - 0.1))}
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-all touch-manipulation"
+                className="inline-flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-all touch-manipulation"
               >
-                <ChevronDown className="h-3.5 w-3.5 sm:h-4 w-4" />
+                <ChevronDown className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>

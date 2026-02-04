@@ -72,7 +72,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { getTasks, createTask, updateTask, deleteTask, getProject, getProjectMembers, updateProject, getTaskContent, createTaskContentItem, updateTaskContentItem, deleteTaskContentItem, enableTaskContent, getTaskConnections, createTaskConnection, deleteTaskConnection } from '@/lib/api/client';
 import { Task, Project, ProjectMember, TaskContentItem, TaskConnection } from '@/lib/types';
 import { subscribeToProject, unsubscribeFromProject } from '@/lib/websocket';
-import { ArrowLeft, Settings, ChevronUp, ChevronDown, Globe, Lock, Users, Edit2, Check, X, Filter, Trash2, Plus, User, Bold, Italic, Calendar, List, Paperclip, AlertCircle, AlertTriangle, Clock } from 'lucide-react';
+import { ArrowLeft, Settings, ChevronUp, ChevronDown, Globe, Lock, Users, Edit2, Check, X, Filter, Trash2, Plus, User, Bold, Italic, Calendar, List, Paperclip, AlertCircle, AlertTriangle, Clock, CheckCircle2, Circle, PlayCircle, EyeOff } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -261,25 +261,23 @@ function AssigneesTasksView({
         (row): row is { member: ProjectMember; tasks: Task[]; stats: { total: number; todo: number; inProgress: number; completed: number } } =>
           row !== null
       );
-  }, [members, tasks, statusFilter]);
-
-  const getStatusFilterLabel = (value: typeof statusFilter) => {
-    switch (value) {
-      case 'todo':
-        return 'Не начато';
-      case 'in_progress':
-        return 'В работе';
-      case 'completed':
-        return 'Выполнено';
-      default:
-        return 'Все';
-    }
-  };
+  }, [members, tasks, statusFilter, hideCompleted]);
 
   const getNextStatus = (current: string): 'todo' | 'in_progress' | 'completed' => {
     if (current === 'todo') return 'in_progress';
     if (current === 'in_progress') return 'completed';
     return 'todo';
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle2 className="h-4 w-4 text-emerald-400" />;
+      case 'in_progress':
+        return <PlayCircle className="h-4 w-4 text-amber-400" />;
+      default:
+        return <Circle className="h-4 w-4 text-gray-400" />;
+    }
   };
 
   if (!rows.length) {
@@ -292,43 +290,72 @@ function AssigneesTasksView({
     );
   }
 
+  const statusOptions: { value: typeof statusFilter; label: string; icon: React.ReactNode }[] = [
+    { value: 'all', label: 'Все', icon: <List className="h-3.5 w-3.5" /> },
+    { value: 'todo', label: 'Не начато', icon: <Circle className="h-3.5 w-3.5" /> },
+    { value: 'in_progress', label: 'В работе', icon: <PlayCircle className="h-3.5 w-3.5" /> },
+    { value: 'completed', label: 'Выполнено', icon: <CheckCircle2 className="h-3.5 w-3.5" /> },
+  ];
+
   return (
     <div className="flex h-full flex-col overflow-hidden px-3 sm:px-4 md:px-6 pb-3">
-      {/* Собственная панель фильтров для режима по исполнителям */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Задачи по исполнителям
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-muted/40 px-1.5 py-1">
-          {(['all', 'todo', 'in_progress', 'completed'] as const).map((value) => (
+      {/* Панель фильтров — обновлённый дизайн */}
+      <div className="mb-5 rounded-2xl border border-border/80 bg-card/60 backdrop-blur-sm shadow-sm dark:shadow-none px-4 py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          {/* Заголовок */}
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Users className="h-4 w-4" />
+            </div>
+            <div>
+              <h3 className="text-base font-semibold text-foreground tracking-tight">
+                По исполнителям
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Фильтр задач по статусу
+              </p>
+            </div>
+          </div>
+
+          {/* Фильтры — статус и опции */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Сегментированный контрол статуса */}
+            <div className="inline-flex p-1 rounded-xl bg-muted/50 border border-border/60">
+              {statusOptions.map(({ value, label, icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setStatusFilter(value)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 ${
+                    statusFilter === value
+                      ? 'bg-background text-foreground shadow-sm dark:shadow-none border border-border/60'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {icon}
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Переключатель «Скрыть выполненные» */}
             <button
-              key={value}
               type="button"
-              onClick={() => setStatusFilter(value)}
-              className={`px-2 py-0.5 text-[11px] rounded-md transition-colors ${
-                statusFilter === value
-                  ? 'bg-background text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+              onClick={() => setHideCompleted((prev) => !prev)}
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${
+                hideCompleted
+                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                  : 'bg-muted/40 text-muted-foreground hover:text-foreground border border-transparent hover:border-border/60'
               }`}
             >
-              {getStatusFilterLabel(value)}
+              {hideCompleted ? (
+                <EyeOff className="h-3.5 w-3.5" />
+              ) : (
+                <CheckCircle2 className="h-3.5 w-3.5 opacity-50" />
+              )}
+              <span>Скрыть выполненные</span>
             </button>
-          ))}
-        </div>
-          {/* Дополнительный фильтр: скрыть выполненные */}
-          <button
-            type="button"
-            className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] transition-colors ${
-              hideCompleted
-                ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-400'
-                : 'border-border bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted'
-            }`}
-            onClick={() => setHideCompleted((prev) => !prev)}
-          >
-            <span className="h-2 w-2 rounded-full bg-emerald-500/70 border border-emerald-500/90" />
-            <span>Скрыть выполненные</span>
-          </button>
+          </div>
         </div>
       </div>
 
@@ -368,105 +395,56 @@ function AssigneesTasksView({
 
             {/* Правая часть — задачи исполнителя */}
             <div className="flex-1 min-w-0 overflow-x-auto scrollbar-thin-ios">
-              <div className="flex gap-2 pb-1">
-                {memberTasks.map((task) => (
-                  <button
-                    key={task.id}
-                    type="button"
-                    onClick={() =>
-                      setExpandedTaskId((prev) => (prev === task.id ? null : task.id))
-                    }
-                    className="group relative min-w-[220px] max-w-xs rounded-xl border border-border bg-card/80 px-3 py-2 text-left hover:border-primary/50 hover:shadow-md hover:shadow-primary/5 transition-all"
-                  >
-                    {/* Сжатый вид */}
-                    <div className="mb-1 flex items-start gap-1.5">
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-semibold text-foreground line-clamp-2">
-                          {task.title || 'Без названия'}
-                        </div>
-                      </div>
-                      {task.deadline && (
-                        <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                      )}
-                    </div>
-                    {task.description && (
-                      <p className="text-[11px] text-muted-foreground line-clamp-3">
-                        {task.description}
-                      </p>
-                    )}
-
-                    {/* Статус задачи — клик циклично меняет статус */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const next = getNextStatus(task.status || 'todo');
-                        onTaskStatusChange?.(task.id, next);
-                      }}
-                      className="mt-1 inline-flex items-center rounded-full border border-border bg-muted/60 px-2 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              <div className="flex items-start gap-2 pb-1">
+                {memberTasks.map((task) => {
+                  const isExpanded = expandedTaskId === task.id;
+                  return (
+                    <div
+                      key={task.id}
+                      className="w-[220px] flex-shrink-0 rounded-xl border border-border bg-card/80 px-3 py-2 hover:border-primary/50 hover:shadow-md hover:shadow-primary/5 transition-all"
                     >
-                      {task.status === 'completed'
-                        ? 'Выполнено'
-                        : task.status === 'in_progress'
-                        ? 'В работе'
-                        : 'Не начато'}
-                    </button>
-
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Развёрнутая карточка поверх всей строки */}
-            {expandedTaskId &&
-              memberTasks.some((t) => t.id === expandedTaskId) && (
-                <div className="absolute inset-0 z-20 rounded-xl border border-primary bg-background/95 shadow-xl p-4 flex flex-col gap-3">
-                  {(() => {
-                    const task = memberTasks.find((t) => t.id === expandedTaskId)!;
-                    return (
-                      <>
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="text-sm font-semibold text-foreground">
-                            {task.title || 'Без названия'}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedTaskId((prev) => (prev === task.id ? null : task.id))
+                        }
+                        className="w-full text-left"
+                      >
+                        <div className="mb-1 flex items-start gap-1.5">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-semibold text-foreground line-clamp-2">
+                              {task.title || 'Без названия'}
+                            </div>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => setExpandedTaskId(null)}
-                            className="text-xs text-muted-foreground hover:text-foreground"
-                          >
-                            Закрыть
-                          </button>
+                          {task.deadline && (
+                            <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                          )}
                         </div>
                         {task.description && (
-                          <p className="text-xs text-muted-foreground">
+                          <p className={`text-[11px] text-muted-foreground ${isExpanded ? '' : 'line-clamp-3'}`}>
                             {task.description}
                           </p>
                         )}
-                        <div className="mt-auto flex items-center justify-between gap-2">
-                          <span className="text-[11px] text-muted-foreground">
-                            Статус:&nbsp;
-                            {task.status === 'completed'
-                              ? 'Выполнено'
-                              : task.status === 'in_progress'
-                              ? 'В работе'
-                              : 'Не начато'}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const next = getNextStatus(task.status || 'todo');
-                              onTaskStatusChange?.(task.id, next);
-                            }}
-                            className="inline-flex items-center rounded-full border border-border bg-muted/60 px-2.5 py-1 text-[11px] text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                          >
-                            Сменить статус
-                          </button>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
-              )}
+                      </button>
+
+                      {/* Статус — только цветная иконка 1в1 как в «Мои задачи» */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const next = getNextStatus(task.status || 'todo');
+                          onTaskStatusChange?.(task.id, next);
+                        }}
+                        className="mt-2 flex items-center justify-center rounded-full p-1 hover:bg-muted/60 transition-colors cursor-pointer"
+                        title={`${task.status === 'completed' ? 'Выполнено' : task.status === 'in_progress' ? 'В работе' : 'Не начато'} — клик: сменить`}
+                      >
+                        {getStatusIcon(task.status || 'todo')}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         ))}
       </div>
